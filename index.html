@@ -28,12 +28,11 @@
         .form-group{display:flex;flex-direction:column;gap:8px}
         .form-group label{font-size:13px;font-weight:500;color:#94a3b8;display:flex;align-items:center;gap:6px}
         .form-group label .required{color:#ef4444}
-        .form-group label .info-icon{cursor:help;color:#a855f7;font-size:11px}
         .form-group input,.form-group select{padding:12px 16px;background:#0f172a;border:1px solid #334155;border-radius:12px;font-size:14px;color:#f1f5f9}
         .form-group input:focus,.form-group select:focus{outline:none;border-color:#a855f7}
         .form-group small{font-size:11px;color:#475569}
         .form-group input.error{border-color:#ef4444}
-        .btn-submit{background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;padding:12px 20px;border-radius:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px}
+        .btn-submit{background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;padding:12px 20px;border-radius:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px;width:100%}
         .btn-submit:hover{transform:translateY(-2px)}
         .btn-group{display:flex;gap:12px;flex-wrap:wrap}
         .btn-primary{background:linear-gradient(135deg,#3b82f6,#2563eb);border:none;padding:10px 20px;border-radius:10px;font-weight:500;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
@@ -74,6 +73,7 @@
         .hint-box{background:rgba(168,85,247,0.1);border-radius:8px;padding:8px 12px;font-size:11px;color:#a78bfa;margin-top:4px}
         .warning-text{color:#ef4444;font-size:11px;margin-top:4px}
         .success-text{color:#10b981;font-size:11px;margin-top:4px}
+        .delete-btn-disabled{opacity:0.5;cursor:not-allowed}
     </style>
 </head>
 <body>
@@ -111,7 +111,7 @@
                     <input type="text" id="nickname" placeholder="Nickname pemain">
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-chart-simple"></i> Total Top Up Customer <span class="required">*</span></label>
+                    <label><i class="fas fa-chart-simple"></i> Total Top Up <span class="required">*</span></label>
                     <select id="totalTopup" onchange="autoFillHadiah()">
                         <option value="">-- Pilih Nominal --</option>
                         <option value="100000">Rp 100.000</option>
@@ -126,26 +126,24 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-gift"></i> Hadiah Event <span class="required">*</span></label>
-                    <input type="text" id="hadiah" readonly placeholder="Otomatis setelah pilih nominal" style="background:#0f172a;color:#a78bfa">
+                    <label><i class="fas fa-gift"></i> Hadiah Event</label>
+                    <input type="text" id="hadiah" readonly placeholder="Otomatis" style="background:#0f172a;color:#a78bfa">
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-gem"></i> Diamond Diberikan <span class="required">*</span></label>
-                    <input type="text" id="diamond" readonly placeholder="Otomatis setelah pilih nominal" style="background:#0f172a;color:#a78bfa">
+                    <label><i class="fas fa-gem"></i> Diamond</label>
+                    <input type="text" id="diamond" readonly placeholder="Otomatis" style="background:#0f172a;color:#a78bfa">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-money-bill-wave"></i> Pengeluaran Customer (Rp) <span class="required">*</span></label>
                     <input type="text" id="pengeluaranManual" placeholder="Contoh: 50000" oninput="validatePengeluaran()">
-                    <small>WAJIB diisi - nominal yang dibayar customer</small>
+                    <small>WAJIB diisi</small>
                     <div id="pengeluaranWarning" class="warning-text"></div>
                 </div>
                 <div class="form-group">
                     <button class="btn-submit" onclick="saveData()"><i class="fas fa-save"></i> Simpan Data</button>
                 </div>
             </div>
-            <div class="hint-box">
-                <i class="fas fa-exclamation-triangle"></i> <strong>Perhatian:</strong> Semua kolom bertanda <strong class="required">*</strong> wajib diisi!
-            </div>
+            <div class="hint-box"><i class="fas fa-exclamation-triangle"></i> <strong>Perhatian:</strong> Semua kolom wajib diisi!</div>
         </div>
     </div>
     
@@ -153,11 +151,11 @@
     <div class="card">
         <div class="card-header"><h2><i class="fas fa-table-list"></i> Data Rekap Claim</h2><div class="btn-group"><button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button></div></div>
         <div class="card-body">
-            <div class="search-section"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()"></div><div class="filter-group"><select id="filterKode" onchange="filterTable()"><option value="">Semua Kode Event</option><option value="A">A - 100K</option><option value="B">B - 200K</option><option value="C">C - 300K</option><option value="D">D - 400K</option><option value="E">E - 500K</option><option value="F">F - 1JT</option><option value="G">G - 2JT</option><option value="H">H - 5JT</option><option value="I">I - 10JT</option></select></div></div>
+            <div class="search-section"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()"></div><div class="filter-group"><select id="filterKode" onchange="filterTable()"><option value="">Semua</option><option value="A">A - 100K</option><option value="B">B - 200K</option><option value="C">C - 300K</option><option value="D">D - 400K</option><option value="E">E - 500K</option><option value="F">F - 1JT</option><option value="G">G - 2JT</option><option value="H">H - 5JT</option><option value="I">I - 10JT</option></select></div></div>
             <div class="table-wrapper">
                 <table id="rekapTable">
                     <thead><tr><th>NO</th><th>TANGGAL</th><th>USER ID</th><th>SERVER ID</th><th>NICKNAME</th><th>KODE</th><th>TOTAL TOP UP</th><th>HADIAH</th><th>DIAMOND</th><th>PENGELUARAN</th><th>AKSI</th></tr></thead>
-                    <tbody id="tableBody"><tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-spinner fa-pulse"></i> Memuat data...<br><small>Mengambil dari Google Sheets</small></td></tr></tbody>
+                    <tbody id="tableBody"><td><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr></tbody>
                     <tfoot id="tableFooter"></tfoot>
                 </table>
             </div>
@@ -171,7 +169,7 @@
         <div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3><button class="close" onclick="closeModal()">&times;</button></div>
         <div class="modal-body">
             <p>Apakah Anda yakin ingin menghapus data ini?</p>
-            <p style="color:#ef4444;font-size:13px;margin-bottom:15px"><i class="fas fa-exclamation-triangle"></i> Data akan dipindahkan ke sheet SECRET (arsip)</p>
+            <p style="color:#ef4444;font-size:13px;margin-bottom:15px"><i class="fas fa-exclamation-triangle"></i> Data akan DIPINDAHKAN ke sheet SECRET (arsip)</p>
             <div class="form-group"><label><i class="fas fa-pencil-alt"></i> Alasan Penghapusan</label><input type="text" id="alasanHapus" placeholder="Contoh: Data duplikat" style="width:100%;padding:10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#fff"></div>
         </div>
         <div class="modal-footer"><button class="btn-outline" onclick="closeModal()">Batal</button><button class="btn-danger" id="confirmDeleteBtn">Hapus & Arsipkan</button></div>
@@ -182,12 +180,11 @@
 
 <script src="config.js"></script>
 <script>
-// ========== MAIN SCRIPT - FIXED ALL ==========
+// ========== MAIN SCRIPT ==========
 
 let allData = [];
 let deleteTargetRowId = null;
 
-// Set default date
 document.getElementById('tanggal').value = getCurrentDate();
 
 function showAlert(message, type) {
@@ -195,7 +192,7 @@ function showAlert(message, type) {
     const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
     alert.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
     alert.className = `alert ${type}`;
-    setTimeout(() => alert.style.display = 'none', 4000);
+    setTimeout(() => alert.style.display = 'none', 5000);
 }
 
 function showLoading(show) {
@@ -208,12 +205,10 @@ function closeModal() {
     document.getElementById('alasanHapus').value = '';
 }
 
-// ========== VALIDASI PENGELUARAN (WAJIB DIISI) ==========
 function validatePengeluaran() {
     let input = document.getElementById('pengeluaranManual');
     let value = input.value.replace(/[^0-9]/g, '');
     const warning = document.getElementById('pengeluaranWarning');
-    
     if (value === '' || value === '0') {
         warning.innerHTML = '⚠️ Wajib diisi!';
         warning.className = 'warning-text';
@@ -232,7 +227,6 @@ function parseRupiahToNumber(rupiahString) {
     return parseInt(rupiahString.replace(/[^0-9]/g, '')) || 0;
 }
 
-// ========== AUTO FILL HADIAH & DIAMOND ==========
 function autoFillHadiah() {
     const total = document.getElementById('totalTopup').value;
     if(total && HADIAH_MAP[total]) {
@@ -257,50 +251,29 @@ function resetForm() {
     document.getElementById('pengeluaranManual').classList.remove('error');
 }
 
-// ========== VALIDASI SEMUA INPUT ==========
 function validateInputs() {
     const userId = document.getElementById('userId').value.trim();
     const serverId = document.getElementById('serverId').value.trim();
     const nickname = document.getElementById('nickname').value.trim();
     const totalTopup = document.getElementById('totalTopup').value;
-    const hadiah = document.getElementById('hadiah').value;
-    const diamond = document.getElementById('diamond').value;
     const pengeluaranManual = document.getElementById('pengeluaranManual').value;
     const pengeluaranAngka = parseRupiahToNumber(pengeluaranManual);
     
-    // Validasi User ID
     if (!userId) { showAlert('User ID harus diisi!', 'error'); return false; }
     if (!/^\d+$/.test(userId)) { showAlert('User ID harus angka!', 'error'); return false; }
-    
-    // Validasi Server ID
     if (!serverId) { showAlert('Server ID harus diisi!', 'error'); return false; }
     if (!/^\d+$/.test(serverId)) { showAlert('Server ID harus angka!', 'error'); return false; }
-    
-    // Validasi Nickname
     if (!nickname) { showAlert('Nickname harus diisi!', 'error'); return false; }
-    
-    // Validasi Total Top Up
-    if (!totalTopup) { showAlert('Pilih Total Top Up Customer!', 'error'); return false; }
-    
-    // Validasi Hadiah (otomatis, tapi harus terisi)
-    if (!hadiah) { showAlert('Hadiah Event tidak valid, pilih ulang Total Top Up!', 'error'); return false; }
-    
-    // Validasi Diamond (otomatis, tapi harus terisi)
-    if (!diamond) { showAlert('Diamond tidak valid, pilih ulang Total Top Up!', 'error'); return false; }
-    
-    // Validasi Pengeluaran (WAJIB)
+    if (!totalTopup) { showAlert('Pilih Total Top Up!', 'error'); return false; }
     if (!pengeluaranManual || pengeluaranManual.trim() === '' || pengeluaranAngka === 0) {
-        showAlert('❌ Pengeluaran Customer WAJIB diisi!', 'error');
+        showAlert('Pengeluaran Customer WAJIB diisi!', 'error');
         document.getElementById('pengeluaranManual').focus();
-        document.getElementById('pengeluaranWarning').innerHTML = '⚠️ Wajib diisi!';
-        document.getElementById('pengeluaranManual').classList.add('error');
         return false;
     }
-    
     return true;
 }
 
-// ========== SAVE DATA KE SHEET REKAP ==========
+// ========== SAVE DATA ==========
 async function saveData() {
     if (!validateInputs()) return;
     
@@ -308,9 +281,7 @@ async function saveData() {
     const dataHadiah = HADIAH_MAP[total];
     const nilaiPengeluaran = parseRupiahToNumber(document.getElementById('pengeluaranManual').value);
     
-    // Ambil data existing untuk menentukan NO terbaru
     const currentData = await fetchAllFromSheetDB('REKAP');
-    // Filter hanya data yang valid (NO tidak null/undefined)
     const validData = currentData.filter(row => row.NO !== null && row.NO !== undefined && row.NO !== '');
     const newNo = validData.length + 1;
     
@@ -334,27 +305,25 @@ async function saveData() {
         });
         const result = await response.json();
         if (result.created) { 
-            showAlert('✅ Data berhasil disimpan ke Google Sheets!', 'success'); 
+            showAlert('✅ Data berhasil disimpan!', 'success'); 
             resetForm(); 
             await loadData(); 
         } else { 
-            showAlert('Gagal menyimpan: ' + JSON.stringify(result), 'error'); 
+            showAlert('Gagal menyimpan', 'error'); 
         }
     } catch(e) { 
-        console.error('Save error:', e);
-        showAlert('❌ Koneksi gagal. Data tidak tersimpan.', 'error'); 
+        showAlert('❌ Koneksi gagal', 'error'); 
     } finally { 
         showLoading(false); 
     }
 }
 
-// ========== FETCH DATA DARI SHEETDB ==========
+// ========== FETCH DATA ==========
 async function fetchAllFromSheetDB(sheet = 'REKAP') {
     const api = sheet === 'SECRET' ? SHEETDB_API_SECRET : SHEETDB_API_REKAP;
     try { 
         const res = await fetch(api); 
         const data = await res.json();
-        // Filter data yang valid (NO tidak null/undefined dan USER_ID tidak kosong)
         if (sheet === 'REKAP') {
             return data.filter(row => row.NO !== null && row.NO !== undefined && row.NO !== '' && row.USER_ID);
         }
@@ -364,7 +333,7 @@ async function fetchAllFromSheetDB(sheet = 'REKAP') {
     }
 }
 
-// ========== LOG KE SHEET SECRET ==========
+// ========== LOG KE SECRET (WAJIB BERHASIL) ==========
 async function logToSecret(data, alasan) {
     const logData = {
         ID_HAPUS: Date.now(),
@@ -388,24 +357,21 @@ async function logToSecret(data, alasan) {
             body: JSON.stringify({ data: logData }) 
         });
         const result = await response.json();
-        console.log('✅ Log ke SECRET:', result);
-        return result.created || result.message === 'Created';
+        console.log('Log ke SECRET response:', result);
+        return result.created === true || result.message === 'Created';
     } catch(e) { 
-        console.error('Gagal log:', e); 
+        console.error('Gagal log ke SECRET:', e); 
         return false; 
     }
 }
 
-// ========== LOAD DATA DARI SHEET REKAP ==========
+// ========== LOAD DATA ==========
 async function loadData() {
     showLoading(true);
     try {
         const result = await fetchAllFromSheetDB('REKAP');
-        
         if (result && result.length > 0) {
-            // Urutkan berdasarkan NO
             result.sort((a,b) => (a.NO || 0) - (b.NO || 0));
-            
             allData = result.map((row, idx) => ({
                 rowId: row.id, 
                 no: row.NO, 
@@ -426,47 +392,40 @@ async function loadData() {
             updateStats([]); 
         }
     } catch(e) { 
-        console.error('Load error:', e);
         renderTable([]); 
     } finally { 
         showLoading(false); 
     }
 }
 
-// ========== RENDER TABLE ==========
 function renderTable(data) {
     const tbody = document.getElementById('tableBody');
     const search = document.getElementById('searchInput').value.toLowerCase();
     const filter = document.getElementById('filterKode').value;
     let filtered = [...data];
-    
     if (search) filtered = filtered.filter(r => (r.userId && r.userId.includes(search)) || (r.nickname && r.nickname.toLowerCase().includes(search)));
     if (filter) filtered = filtered.filter(r => r.kodeEvent === filter);
-    
     if (!filtered.length) { 
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada data</td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada数据</td></tr>'; 
         document.getElementById('tableFooter').innerHTML = ''; 
         return; 
     }
-    
     let total = 0;
     tbody.innerHTML = filtered.map((r,i) => { 
         total += r.pengeluaran || 0; 
-        return `
-            <tr>
-                <td>${r.no || (i+1)}</td>
-                <td>${r.tanggal || '-'}</td>
-                <td><span class="badge-success">${r.userId || '-'}</span></td>
-                <td>${r.serverId || '-'}</td>
-                <td><strong>${r.nickname || '-'}</strong></td>
-                <td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${r.kodeEvent || '-'}</span></td>
-                <td>${formatRupiah(r.totalTopup)}</td>
-                <td>${r.hadiah || '-'}</td>
-                <td>${r.diamond || '-'} Diamond</td>
-                <td style="color:#fbbf24;font-weight:700">${formatRupiah(r.pengeluaran)}</td>
-                <td><button class="btn-danger-small" onclick="prepareDelete('${r.rowId}')"><i class="fas fa-trash"></i> Hapus</button></td>
-            </tr>
-        `; 
+        return `<tr>
+            <td>${r.no || (i+1)}</td>
+            <td>${r.tanggal || '-'}</td>
+            <td><span class="badge-success">${r.userId || '-'}</span></td>
+            <td>${r.serverId || '-'}</td>
+            <td><strong>${r.nickname || '-'}</strong></td>
+            <td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${r.kodeEvent || '-'}</span></td>
+            <td>${formatRupiah(r.totalTopup)}</td>
+            <td>${r.hadiah || '-'}</td>
+            <td>${r.diamond || '-'} Diamond</td>
+            <td style="color:#fbbf24;font-weight:700">${formatRupiah(r.pengeluaran)}</td>
+            <td><button class="btn-danger-small" onclick="prepareDelete('${r.rowId}')"><i class="fas fa-trash"></i> Hapus</button></td>
+        </tr>`; 
     }).join('');
     document.getElementById('tableFooter').innerHTML = `<tr class="table-footer"><td colspan="9" style="text-align:right;font-weight:700">TOTAL PENGELUARAN:</td><td colspan="2" style="font-weight:800;color:#fbbf24">${formatRupiah(total)}</td></tr>`;
 }
@@ -482,13 +441,12 @@ function filterTable() {
     if (allData.length > 0) renderTable(allData); 
 }
 
-// ========== PREPARE DELETE ==========
 function prepareDelete(rowId) {
     deleteTargetRowId = rowId;
     document.getElementById('deleteModal').style.display = 'flex';
 }
 
-// ========== DELETE + LOG KE SECRET ==========
+// ========== DELETE + PINDAH KE SECRET ==========
 async function deleteAndReindex() {
     if (!deleteTargetRowId) { 
         showAlert('Data tidak ditemukan', 'error'); 
@@ -510,16 +468,18 @@ async function deleteAndReindex() {
             return; 
         }
         
-        // 2. LOG KE SHEET SECRET (WAJIB)
+        // 2. LOG KE SHEET SECRET (WAJIB BERHASIL)
         const logSuccess = await logToSecret(dataToDelete, alasan);
         if (!logSuccess) { 
-            showAlert('Gagal menyimpan arsip ke SECRET!', 'error'); 
+            showAlert('❌ Gagal menyimpan arsip ke SECRET! Periksa API SECRET', 'error'); 
             showLoading(false); 
             return; 
         }
         
         // 3. HAPUS DARI REKAP
-        await fetch(`${SHEETDB_API_REKAP}/${deleteTargetRowId}`, { method: 'DELETE' });
+        const deleteResponse = await fetch(`${SHEETDB_API_REKAP}/${deleteTargetRowId}`, { method: 'DELETE' });
+        const deleteResult = await deleteResponse.json();
+        console.log('Delete from REKAP:', deleteResult);
         
         // 4. REINDEX ULANG NOMOR URUT
         const remainingData = await fetchAllFromSheetDB('REKAP');
@@ -535,12 +495,12 @@ async function deleteAndReindex() {
             }
         }
         
-        showAlert('✅ Data dihapus & dipindahkan ke arsip SECRET!', 'success');
+        showAlert('✅ Data berhasil dihapus & dipindahkan ke arsip SECRET!', 'success');
         await loadData();
         
     } catch(e) { 
         console.error('Delete error:', e); 
-        showAlert('❌ Gagal menghapus data', 'error'); 
+        showAlert('❌ Gagal menghapus data: ' + e.message, 'error'); 
     } finally { 
         closeModal(); 
         showLoading(false); 
