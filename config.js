@@ -1,12 +1,18 @@
 // ==========================================
 // CONFIGURATION FILE - EVENT TOP UP KUMULATIF
+// DENGAN 2 SHEET: REKAP + SECRET
 // ==========================================
 
 // ========== 1. SHEETDB API URL ==========
-// DAFTAR GRATIS DI https://sheetdb.io
-// GANTI DENGAN URL DARI SHEETDB ANDA!
-const SHEETDB_API = 'https://sheetdb.io/api/v1/0l49sfo2dgped';
-const SHEET_NAME = 'REKAP';
+// Sheet REKAP (data aktif)
+const SHEETDB_API_REKAP = 'https://sheetdb.io/api/v1/0l49sfo2dgped';
+
+// Sheet SECRET (arsip data yang dihapus)
+const SHEETDB_API_SECRET = 'https://sheetdb.io/api/v1/rttvafremapqf';
+
+// Nama sheet
+const SHEET_NAME_REKAP = 'REKAP';
+const SHEET_NAME_SECRET = 'SECRET';
 
 // ========== 2. DATA HADIAH (SESUAI KATALOG) ==========
 const HADIAH_MAP = {
@@ -45,5 +51,17 @@ function validateUserId(userId) { return /^\d+$/.test(userId); }
 function validateServerId(serverId) { return /^\d+$/.test(serverId); }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SHEETDB_API, SHEET_NAME, HADIAH_MAP, formatRupiah, formatNumber, getCurrentDate, getKodeFromTotal, validateUserId, validateServerId };
+    module.exports = { 
+        SHEETDB_API_REKAP, 
+        SHEETDB_API_SECRET,
+        SHEET_NAME_REKAP,
+        SHEET_NAME_SECRET,
+        HADIAH_MAP, 
+        formatRupiah, 
+        formatNumber, 
+        getCurrentDate, 
+        getKodeFromTotal, 
+        validateUserId, 
+        validateServerId 
+    };
 }
