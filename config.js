@@ -1,26 +1,24 @@
 // ==========================================
 // CONFIGURATION FILE - EVENT TOP UP KUMULATIF
+// SESUAI STRUKTUR SHEET ANDA
 // ==========================================
-// Last Update: 30 April 2026
 
 // ========== 1. GOOGLE APPS SCRIPT URL ==========
-// URL sudah diisi dengan deployment Anda
 const API_URL = 'https://script.google.com/macros/s/AKfycbzSROS9lCXmyp2V0couotPpLmJIhTCVirZv7zYjMyjXYJMnkYAV6nFim-QpGJB7x4grEw/exec';
 
-// ========== 2. GOOGLE SHEETS CONFIGURATION ==========
+// ========== 2. GOOGLE SHEETS CONFIGURASI ==========
 const SHEETS_CONFIG = {
     spreadsheetId: '1h00WylehM60GELOKRGMjU9RPQchrrg2Ak3hPOyrNCps',
     sheetName: 'REKAP',
     columns: {
-        no: 1,
-        tanggalClaim: 2,
-        userId: 3,
-        serverId: 4,
-        nickname: 5,
-        totalTopup: 6,
-        hadiahEvent: 7,
-        diamond: 8,
-        pengeluaran: 9
+        no: 1,              // A
+        tanggalClaim: 2,    // B
+        userId: 3,          // C
+        serverId: 4,        // D
+        nickname: 5,        // E
+        totalTopup: 6,      // F
+        pengeluaran: 7,     // G
+        diamond: 8          // H
     },
     headers: [
         'NO',
@@ -29,9 +27,8 @@ const SHEETS_CONFIG = {
         'SERVER_ID',
         'NICKNAME',
         'TOTAL_TOPUP_RP',
-        'HADIAH_EVENT',
-        'DIAMOND',
-        'PENGELUARAN_RP'
+        'PENGELUARAN_RP',
+        'DIAMOND'
     ]
 };
 
@@ -102,42 +99,7 @@ const HADIAH_MAP = {
     }
 };
 
-// ========== 4. DAFTAR KODE EVENT ==========
-const KODE_EVENT_LIST = [
-    { kode: 'A', nominal: 100000, hadiah: '10 Diamond', harga: 2904, keterangan: 'Top Up 100K → 10 Diamond' },
-    { kode: 'B', nominal: 200000, hadiah: '20 Diamond', harga: 5809, keterangan: 'Top Up 200K → 20 Diamond' },
-    { kode: 'C', nominal: 300000, hadiah: '30 Diamond', harga: 8300, keterangan: 'Top Up 300K → 30 Diamond' },
-    { kode: 'D', nominal: 400000, hadiah: '40 Diamond', harga: 11129, keterangan: 'Top Up 400K → 40 Diamond' },
-    { kode: 'E', nominal: 500000, hadiah: '50 Diamond', harga: 13766, keterangan: 'Top Up 500K → 50 Diamond' },
-    { kode: 'F', nominal: 1000000, hadiah: '100 Diamond', harga: 26615, keterangan: 'Top Up 1JT → 100 Diamond' },
-    { kode: 'G', nominal: 2000000, hadiah: '200 Diamond', harga: 55327, keterangan: 'Top Up 2JT → 200 Diamond' },
-    { kode: 'H', nominal: 5000000, hadiah: '500 Diamond', harga: 77936, keterangan: 'Top Up 5JT → 500 Diamond' },
-    { kode: 'I', nominal: 10000000, hadiah: 'Twilight Pass + 1000 Diamond', harga: 304072, keterangan: 'Top Up 10JT → TP + 1000 Diamond' }
-];
-
-// ========== 5. INFORMASI EVENT ==========
-const EVENT_INFO = {
-    name: 'Event Top Up Kumulatif',
-    startDate: '2026-04-28',
-    endDate: '2026-06-30',
-    periode: '28 April - 30 Juni 2026',
-    description: 'Semakin banyak top up, semakin besar hadiahmu!',
-    claimVia: 'WhatsApp Official',
-    isLimited: true
-};
-
-// ========== 6. KONFIGURASI APLIKASI ==========
-const APP_CONFIG = {
-    appName: 'Admin Rekap Event Top Up',
-    version: '2.0.0',
-    autoRefreshInterval: 300000,
-    autoSyncInterval: 300000,
-    offlineMode: true,
-    debugMode: false,
-    locale: 'id'
-};
-
-// ========== 7. FORMATTER FUNCTIONS ==========
+// ========== 4. FUNGSI FORMATTER ==========
 function formatRupiah(angka) {
     if (!angka && angka !== 0) return 'Rp 0';
     return new Intl.NumberFormat('id-ID', {
@@ -153,25 +115,8 @@ function formatNumber(angka) {
     return new Intl.NumberFormat('id-ID').format(angka);
 }
 
-function formatDate(date) {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toISOString().split('T')[0];
-}
-
 function getCurrentDate() {
     return new Date().toISOString().split('T')[0];
-}
-
-// ========== 8. HELPER FUNCTIONS ==========
-function getHadiahByKode(kode) {
-    const event = KODE_EVENT_LIST.find(e => e.kode === kode);
-    return event ? event.hadiah : '-';
-}
-
-function getHargaByKode(kode) {
-    const event = KODE_EVENT_LIST.find(e => e.kode === kode);
-    return event ? formatRupiah(event.harga) : '-';
 }
 
 function getKodeFromTotal(total) {
@@ -190,55 +135,17 @@ function validateServerId(serverId) {
     return /^\d+$/.test(serverId);
 }
 
-// ========== 9. PESAN ==========
-const MESSAGES = {
-    SUCCESS_SAVE: '✅ Data berhasil disimpan!',
-    SUCCESS_DELETE: '✅ Data berhasil dihapus!',
-    SUCCESS_RESET: '✅ Form telah direset',
-    SUCCESS_EXPORT: '✅ Data berhasil diekspor!',
-    SUCCESS_SYNC: '✅ Data berhasil disinkronkan!',
-    ERROR_REQUIRED_USER_ID: '❌ User ID harus diisi!',
-    ERROR_INVALID_USER_ID: '❌ User ID harus berupa angka!',
-    ERROR_REQUIRED_SERVER_ID: '❌ Server ID harus diisi!',
-    ERROR_INVALID_SERVER_ID: '❌ Server ID harus berupa angka!',
-    ERROR_REQUIRED_NICKNAME: '❌ Nickname harus diisi!',
-    ERROR_REQUIRED_TOTAL: '❌ Pilih Total Top Up terlebih dahulu!',
-    ERROR_NO_DATA: '❌ Tidak ada data untuk diekspor',
-    ERROR_NO_LOCAL_DATA: '❌ Tidak ada data lokal untuk disinkronkan',
-    ERROR_SYNC_FAILED: '❌ Gagal menyinkronkan data, periksa koneksi',
-    ERROR_CONNECTION: '⚠️ Koneksi terputus. Data disimpan lokal.',
-    WARNING_OFFLINE: '📱 Tersimpan ke lokal (offline). Akan sync otomatis.',
-    WARNING_DELETE: '⚠️ Tindakan ini tidak dapat dibatalkan!',
-    INFO_NO_DATA: '📭 Belum ada data',
-    INFO_NO_RESULT: '🔍 Tidak ada data yang ditemukan'
-};
-
-// ========== 10. EKSPOR (UNTUK NODE.JS) ==========
+// Ekspor untuk penggunaan
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         API_URL,
         SHEETS_CONFIG,
         HADIAH_MAP,
-        KODE_EVENT_LIST,
-        EVENT_INFO,
-        APP_CONFIG,
         formatRupiah,
         formatNumber,
-        formatDate,
         getCurrentDate,
-        getHadiahByKode,
-        getHargaByKode,
         getKodeFromTotal,
         validateUserId,
-        validateServerId,
-        MESSAGES
+        validateServerId
     };
-}
-
-// ========== 11. CONSOLE LOG ==========
-if (APP_CONFIG.debugMode) {
-    console.log('🔧 Config loaded successfully');
-    console.log('📊 Event:', EVENT_INFO.name);
-    console.log('📅 Periode:', EVENT_INFO.periode);
-    console.log('🔗 API URL:', API_URL);
 }
