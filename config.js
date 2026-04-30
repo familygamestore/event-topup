@@ -1,37 +1,27 @@
 // ==========================================
 // CONFIGURATION FILE - EVENT TOP UP KUMULATIF
 // ==========================================
-// Digunakan untuk: Admin Panel Rekap Claim
-// Github: https://github.com/username/event-topup-rekap
 // Last Update: 30 April 2026
 
 // ========== 1. GOOGLE APPS SCRIPT URL ==========
-// GANTI DENGAN URL DARI GOOGLE APPS SCRIPT ANDA!
-// Cara dapatkan: Buka Apps Script -> Deploy -> New deployment -> Web App -> Copy URL
-const API_URL = 'https://script.google.com/macros/s/AKfycbwTG3DZWsbrBlwmcc8z1RtjzI7sNB-hCV9xFvbBHdcmhu2ozMs4BimV3bfkK4d4lVL1Qw/exec';
+// URL sudah diisi dengan deployment Anda
+const API_URL = 'https://script.google.com/macros/s/AKfycbzSROS9lCXmyp2V0couotPpLmJIhTCVirZv7zYjMyjXYJMnkYAV6nFim-QpGJB7x4grEw/exec';
 
 // ========== 2. GOOGLE SHEETS CONFIGURATION ==========
 const SHEETS_CONFIG = {
-    // ID Google Sheets (dari URL)
     spreadsheetId: '1h00WylehM60GELOKRGMjU9RPQchrrg2Ak3hPOyrNCps',
-    
-    // Nama sheet yang digunakan
     sheetName: 'REKAP',
-    
-    // Struktur kolom (A = 1, B = 2, dst)
     columns: {
-        no: 1,              // A
-        tanggalClaim: 2,    // B
-        userId: 3,          // C
-        serverId: 4,        // D
-        nickname: 5,        // E
-        totalTopup: 6,      // F
-        hadiahEvent: 7,     // G
-        diamond: 8,         // H
-        pengeluaran: 9      // I
+        no: 1,
+        tanggalClaim: 2,
+        userId: 3,
+        serverId: 4,
+        nickname: 5,
+        totalTopup: 6,
+        hadiahEvent: 7,
+        diamond: 8,
+        pengeluaran: 9
     },
-    
-    // Header yang wajib ada di baris 1
     headers: [
         'NO',
         'TANGGAL_CLAIM',
@@ -46,7 +36,6 @@ const SHEETS_CONFIG = {
 };
 
 // ========== 3. DATA HADIAH (SESUAI KATALOG) ==========
-// Mapping total topup ke detail hadiah
 const HADIAH_MAP = {
     '100000': { 
         kode: 'A', 
@@ -113,7 +102,7 @@ const HADIAH_MAP = {
     }
 };
 
-// ========== 4. DAFTAR KODE EVENT (UNTUK DROPDOWN FILTER) ==========
+// ========== 4. DAFTAR KODE EVENT ==========
 const KODE_EVENT_LIST = [
     { kode: 'A', nominal: 100000, hadiah: '10 Diamond', harga: 2904, keterangan: 'Top Up 100K → 10 Diamond' },
     { kode: 'B', nominal: 200000, hadiah: '20 Diamond', harga: 5809, keterangan: 'Top Up 200K → 20 Diamond' },
@@ -139,35 +128,16 @@ const EVENT_INFO = {
 
 // ========== 6. KONFIGURASI APLIKASI ==========
 const APP_CONFIG = {
-    // Nama aplikasi
     appName: 'Admin Rekap Event Top Up',
-    
-    // Versi
     version: '2.0.0',
-    
-    // Auto refresh interval (dalam milidetik) - 5 menit
     autoRefreshInterval: 300000,
-    
-    // Auto sync interval (dalam milidetik) - 5 menit
     autoSyncInterval: 300000,
-    
-    // Enable offline mode
     offlineMode: true,
-    
-    // Enable debug logging
     debugMode: false,
-    
-    // Bahasa (id/en)
     locale: 'id'
 };
 
 // ========== 7. FORMATTER FUNCTIONS ==========
-
-/**
- * Format angka ke format Rupiah
- * @param {number} angka - Angka yang akan diformat
- * @returns {string} Format Rupiah (contoh: Rp 10.000)
- */
 function formatRupiah(angka) {
     if (!angka && angka !== 0) return 'Rp 0';
     return new Intl.NumberFormat('id-ID', {
@@ -178,62 +148,32 @@ function formatRupiah(angka) {
     }).format(angka);
 }
 
-/**
- * Format angka ke format ribuan
- * @param {number} angka - Angka yang akan diformat
- * @returns {string} Format ribuan (contoh: 10.000)
- */
 function formatNumber(angka) {
     if (!angka) return '0';
     return new Intl.NumberFormat('id-ID').format(angka);
 }
 
-/**
- * Format tanggal ke YYYY-MM-DD
- * @param {Date|string} date - Tanggal yang akan diformat
- * @returns {string} Format tanggal YYYY-MM-DD
- */
 function formatDate(date) {
     if (!date) return '';
     const d = new Date(date);
     return d.toISOString().split('T')[0];
 }
 
-/**
- * Mendapatkan tanggal hari ini
- * @returns {string} Tanggal hari ini format YYYY-MM-DD
- */
 function getCurrentDate() {
     return new Date().toISOString().split('T')[0];
 }
 
 // ========== 8. HELPER FUNCTIONS ==========
-
-/**
- * Mendapatkan hadiah berdasarkan kode event
- * @param {string} kode - Kode event (A, B, C, dst)
- * @returns {string} Nama hadiah
- */
 function getHadiahByKode(kode) {
     const event = KODE_EVENT_LIST.find(e => e.kode === kode);
     return event ? event.hadiah : '-';
 }
 
-/**
- * Mendapatkan harga berdasarkan kode event
- * @param {string} kode - Kode event (A, B, C, dst)
- * @returns {string} Format Rupiah harga
- */
 function getHargaByKode(kode) {
     const event = KODE_EVENT_LIST.find(e => e.kode === kode);
     return event ? formatRupiah(event.harga) : '-';
 }
 
-/**
- * Mendapatkan kode event dari total topup
- * @param {number} total - Total topup dalam Rupiah
- * @returns {string} Kode event (A, B, C, dst)
- */
 function getKodeFromTotal(total) {
     const map = {
         100000: 'A', 200000: 'B', 300000: 'C', 400000: 'D',
@@ -242,57 +182,38 @@ function getKodeFromTotal(total) {
     return map[total] || '-';
 }
 
-/**
- * Validasi User ID (hanya angka)
- * @param {string} userId - User ID yang akan divalidasi
- * @returns {boolean} True jika valid
- */
 function validateUserId(userId) {
     return /^\d+$/.test(userId);
 }
 
-/**
- * Validasi Server ID (hanya angka)
- * @param {string} serverId - Server ID yang akan divalidasi
- * @returns {boolean} True jika valid
- */
 function validateServerId(serverId) {
     return /^\d+$/.test(serverId);
 }
 
-// ========== 9. PESAN ERROR & SUKSES ==========
+// ========== 9. PESAN ==========
 const MESSAGES = {
-    // Success messages
-    SUCCESS_SAVE: 'Data berhasil disimpan!',
-    SUCCESS_DELETE: 'Data berhasil dihapus!',
-    SUCCESS_RESET: 'Form telah direset',
-    SUCCESS_EXPORT: 'Data berhasil diekspor!',
-    SUCCESS_SYNC: 'Data berhasil disinkronkan!',
-    
-    // Error messages
-    ERROR_REQUIRED_USER_ID: 'User ID harus diisi!',
-    ERROR_INVALID_USER_ID: 'User ID harus berupa angka!',
-    ERROR_REQUIRED_SERVER_ID: 'Server ID harus diisi!',
-    ERROR_INVALID_SERVER_ID: 'Server ID harus berupa angka!',
-    ERROR_REQUIRED_NICKNAME: 'Nickname harus diisi!',
-    ERROR_REQUIRED_TOTAL: 'Pilih Total Top Up terlebih dahulu!',
-    ERROR_NO_DATA: 'Tidak ada data untuk diekspor',
-    ERROR_NO_LOCAL_DATA: 'Tidak ada data lokal untuk disinkronkan',
-    ERROR_SYNC_FAILED: 'Gagal menyinkronkan data, periksa koneksi',
-    ERROR_CONNECTION: 'Koneksi terputus. Data disimpan lokal.',
-    
-    // Warning messages
-    WARNING_OFFLINE: 'Tersimpan ke lokal (offline). Akan sync otomatis.',
-    WARNING_DELETE: 'Tindakan ini tidak dapat dibatalkan!',
-    
-    // Info messages
-    INFO_LOADING: 'Memproses data...',
-    INFO_NO_DATA: 'Belum ada data',
-    INFO_NO_RESULT: 'Tidak ada data yang ditemukan'
+    SUCCESS_SAVE: '✅ Data berhasil disimpan!',
+    SUCCESS_DELETE: '✅ Data berhasil dihapus!',
+    SUCCESS_RESET: '✅ Form telah direset',
+    SUCCESS_EXPORT: '✅ Data berhasil diekspor!',
+    SUCCESS_SYNC: '✅ Data berhasil disinkronkan!',
+    ERROR_REQUIRED_USER_ID: '❌ User ID harus diisi!',
+    ERROR_INVALID_USER_ID: '❌ User ID harus berupa angka!',
+    ERROR_REQUIRED_SERVER_ID: '❌ Server ID harus diisi!',
+    ERROR_INVALID_SERVER_ID: '❌ Server ID harus berupa angka!',
+    ERROR_REQUIRED_NICKNAME: '❌ Nickname harus diisi!',
+    ERROR_REQUIRED_TOTAL: '❌ Pilih Total Top Up terlebih dahulu!',
+    ERROR_NO_DATA: '❌ Tidak ada data untuk diekspor',
+    ERROR_NO_LOCAL_DATA: '❌ Tidak ada data lokal untuk disinkronkan',
+    ERROR_SYNC_FAILED: '❌ Gagal menyinkronkan data, periksa koneksi',
+    ERROR_CONNECTION: '⚠️ Koneksi terputus. Data disimpan lokal.',
+    WARNING_OFFLINE: '📱 Tersimpan ke lokal (offline). Akan sync otomatis.',
+    WARNING_DELETE: '⚠️ Tindakan ini tidak dapat dibatalkan!',
+    INFO_NO_DATA: '📭 Belum ada data',
+    INFO_NO_RESULT: '🔍 Tidak ada data yang ditemukan'
 };
 
-// ========== 10. EKSPOR MODULE (UNTUK NODE.JS) ==========
-// Jika digunakan dengan module system (bisa dihapus jika tidak perlu)
+// ========== 10. EKSPOR (UNTUK NODE.JS) ==========
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         API_URL,
@@ -314,11 +235,10 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-// ========== 11. CONSOLE LOG (UNTUK DEBUG) ==========
+// ========== 11. CONSOLE LOG ==========
 if (APP_CONFIG.debugMode) {
     console.log('🔧 Config loaded successfully');
     console.log('📊 Event:', EVENT_INFO.name);
     console.log('📅 Periode:', EVENT_INFO.periode);
     console.log('🔗 API URL:', API_URL);
-    console.log('📁 Sheet ID:', SHEETS_CONFIG.spreadsheetId);
 }
