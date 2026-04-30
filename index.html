@@ -32,7 +32,7 @@
         .form-group input,.form-group select{padding:12px 16px;background:#0f172a;border:1px solid #334155;border-radius:12px;font-size:14px;color:#f1f5f9}
         .form-group input:focus,.form-group select:focus{outline:none;border-color:#a855f7}
         .form-group small{font-size:11px;color:#475569}
-        .form-group input.error{border-color:#ef4444;box-shadow:0 0 0 1px #ef4444}
+        .form-group input.error{border-color:#ef4444}
         .btn-submit{background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;padding:12px 20px;border-radius:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px}
         .btn-submit:hover{transform:translateY(-2px)}
         .btn-group{display:flex;gap:12px;flex-wrap:wrap}
@@ -126,12 +126,12 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-gift"></i> Hadiah Event</label>
-                    <input type="text" id="hadiah" readonly placeholder="Otomatis terisi" style="background:#0f172a;color:#a78bfa">
+                    <label><i class="fas fa-gift"></i> Hadiah Event <span class="required">*</span></label>
+                    <input type="text" id="hadiah" readonly placeholder="Otomatis setelah pilih nominal" style="background:#0f172a;color:#a78bfa">
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-gem"></i> Diamond Diberikan</label>
-                    <input type="text" id="diamond" readonly placeholder="Otomatis terisi" style="background:#0f172a;color:#a78bfa">
+                    <label><i class="fas fa-gem"></i> Diamond Diberikan <span class="required">*</span></label>
+                    <input type="text" id="diamond" readonly placeholder="Otomatis setelah pilih nominal" style="background:#0f172a;color:#a78bfa">
                 </div>
                 <div class="form-group">
                     <label><i class="fas fa-money-bill-wave"></i> Pengeluaran Customer (Rp) <span class="required">*</span></label>
@@ -144,7 +144,7 @@
                 </div>
             </div>
             <div class="hint-box">
-                <i class="fas fa-exclamation-triangle"></i> <strong>Perhatian:</strong> Kolom "Pengeluaran Customer" <strong>WAJIB DIISI</strong>. Tidak boleh kosong!
+                <i class="fas fa-exclamation-triangle"></i> <strong>Perhatian:</strong> Semua kolom bertanda <strong class="required">*</strong> wajib diisi!
             </div>
         </div>
     </div>
@@ -182,11 +182,12 @@
 
 <script src="config.js"></script>
 <script>
-// ========== MAIN SCRIPT - DELETE WAJIB MASUK SECRET & PENGELUARAN WAJIB DIISI ==========
+// ========== MAIN SCRIPT - FIXED ALL ==========
 
 let allData = [];
 let deleteTargetRowId = null;
 
+// Set default date
 document.getElementById('tanggal').value = getCurrentDate();
 
 function showAlert(message, type) {
@@ -231,6 +232,7 @@ function parseRupiahToNumber(rupiahString) {
     return parseInt(rupiahString.replace(/[^0-9]/g, '')) || 0;
 }
 
+// ========== AUTO FILL HADIAH & DIAMOND ==========
 function autoFillHadiah() {
     const total = document.getElementById('totalTopup').value;
     if(total && HADIAH_MAP[total]) {
@@ -252,31 +254,45 @@ function resetForm() {
     document.getElementById('pengeluaranManual').value = '';
     document.getElementById('tanggal').value = getCurrentDate();
     document.getElementById('pengeluaranWarning').innerHTML = '';
-    document.getElementById('pengeluaranWarning').className = 'warning-text';
     document.getElementById('pengeluaranManual').classList.remove('error');
 }
 
+// ========== VALIDASI SEMUA INPUT ==========
 function validateInputs() {
     const userId = document.getElementById('userId').value.trim();
     const serverId = document.getElementById('serverId').value.trim();
     const nickname = document.getElementById('nickname').value.trim();
     const totalTopup = document.getElementById('totalTopup').value;
+    const hadiah = document.getElementById('hadiah').value;
+    const diamond = document.getElementById('diamond').value;
     const pengeluaranManual = document.getElementById('pengeluaranManual').value;
     const pengeluaranAngka = parseRupiahToNumber(pengeluaranManual);
     
+    // Validasi User ID
     if (!userId) { showAlert('User ID harus diisi!', 'error'); return false; }
     if (!/^\d+$/.test(userId)) { showAlert('User ID harus angka!', 'error'); return false; }
+    
+    // Validasi Server ID
     if (!serverId) { showAlert('Server ID harus diisi!', 'error'); return false; }
     if (!/^\d+$/.test(serverId)) { showAlert('Server ID harus angka!', 'error'); return false; }
-    if (!nickname) { showAlert('Nickname harus diisi!', 'error'); return false; }
-    if (!totalTopup) { showAlert('Pilih Total Top Up!', 'error'); return false; }
     
-    // VALIDASI WAJIB PENGELUARAN
+    // Validasi Nickname
+    if (!nickname) { showAlert('Nickname harus diisi!', 'error'); return false; }
+    
+    // Validasi Total Top Up
+    if (!totalTopup) { showAlert('Pilih Total Top Up Customer!', 'error'); return false; }
+    
+    // Validasi Hadiah (otomatis, tapi harus terisi)
+    if (!hadiah) { showAlert('Hadiah Event tidak valid, pilih ulang Total Top Up!', 'error'); return false; }
+    
+    // Validasi Diamond (otomatis, tapi harus terisi)
+    if (!diamond) { showAlert('Diamond tidak valid, pilih ulang Total Top Up!', 'error'); return false; }
+    
+    // Validasi Pengeluaran (WAJIB)
     if (!pengeluaranManual || pengeluaranManual.trim() === '' || pengeluaranAngka === 0) {
         showAlert('❌ Pengeluaran Customer WAJIB diisi!', 'error');
         document.getElementById('pengeluaranManual').focus();
         document.getElementById('pengeluaranWarning').innerHTML = '⚠️ Wajib diisi!';
-        document.getElementById('pengeluaranWarning').className = 'warning-text';
         document.getElementById('pengeluaranManual').classList.add('error');
         return false;
     }
@@ -284,7 +300,7 @@ function validateInputs() {
     return true;
 }
 
-// ========== SAVE DATA ==========
+// ========== SAVE DATA KE SHEET REKAP ==========
 async function saveData() {
     if (!validateInputs()) return;
     
@@ -292,8 +308,11 @@ async function saveData() {
     const dataHadiah = HADIAH_MAP[total];
     const nilaiPengeluaran = parseRupiahToNumber(document.getElementById('pengeluaranManual').value);
     
+    // Ambil data existing untuk menentukan NO terbaru
     const currentData = await fetchAllFromSheetDB('REKAP');
-    const newNo = (currentData && currentData.length) ? currentData.length + 1 : 1;
+    // Filter hanya data yang valid (NO tidak null/undefined)
+    const validData = currentData.filter(row => row.NO !== null && row.NO !== undefined && row.NO !== '');
+    const newNo = validData.length + 1;
     
     const formData = {
         NO: newNo,
@@ -315,43 +334,49 @@ async function saveData() {
         });
         const result = await response.json();
         if (result.created) { 
-            showAlert('✅ Data berhasil disimpan!', 'success'); 
+            showAlert('✅ Data berhasil disimpan ke Google Sheets!', 'success'); 
             resetForm(); 
             await loadData(); 
         } else { 
-            showAlert('Gagal menyimpan', 'error'); 
+            showAlert('Gagal menyimpan: ' + JSON.stringify(result), 'error'); 
         }
     } catch(e) { 
-        showAlert('❌ Koneksi gagal', 'error'); 
+        console.error('Save error:', e);
+        showAlert('❌ Koneksi gagal. Data tidak tersimpan.', 'error'); 
     } finally { 
         showLoading(false); 
     }
 }
 
-// ========== FETCH DATA ==========
+// ========== FETCH DATA DARI SHEETDB ==========
 async function fetchAllFromSheetDB(sheet = 'REKAP') {
     const api = sheet === 'SECRET' ? SHEETDB_API_SECRET : SHEETDB_API_REKAP;
     try { 
         const res = await fetch(api); 
-        return await res.json(); 
+        const data = await res.json();
+        // Filter data yang valid (NO tidak null/undefined dan USER_ID tidak kosong)
+        if (sheet === 'REKAP') {
+            return data.filter(row => row.NO !== null && row.NO !== undefined && row.NO !== '' && row.USER_ID);
+        }
+        return data;
     } catch(e) { 
         return []; 
     }
 }
 
-// ========== LOG KE SECRET (WAJIB BERHASIL) ==========
+// ========== LOG KE SHEET SECRET ==========
 async function logToSecret(data, alasan) {
     const logData = {
         ID_HAPUS: Date.now(),
         TANGGAL_HAPUS: new Date().toISOString(),
-        NO_LAMA: data.NO || data.no || '-',
-        TANGGAL_CLAIM: data.TANGGAL_CLAIM || data.tanggal || '-',
-        USER_ID: data.USER_ID || data.userId || '-',
-        SERVER_ID: data.SERVER_ID || data.serverId || '-',
-        NICKNAME: data.NICKNAME || data.nickname || '-',
-        TOTAL_TOPUP_RP: data.TOTAL_TOPUP_RP || data.totalTopup || 0,
-        PENGELUARAN_RP: data.PENGELUARAN_RP || data.pengeluaran || 0,
-        DIAMOND: data.DIAMOND || data.diamond || '-',
+        NO_LAMA: data.NO || '-',
+        TANGGAL_CLAIM: data.TANGGAL_CLAIM || '-',
+        USER_ID: data.USER_ID || '-',
+        SERVER_ID: data.SERVER_ID || '-',
+        NICKNAME: data.NICKNAME || '-',
+        TOTAL_TOPUP_RP: data.TOTAL_TOPUP_RP || 0,
+        PENGELUARAN_RP: data.PENGELUARAN_RP || 0,
+        DIAMOND: data.DIAMOND || '-',
         DIHAPUS_OLEH: 'Admin Panel',
         ALASAN: alasan || 'Tidak ada alasan'
     };
@@ -371,16 +396,19 @@ async function logToSecret(data, alasan) {
     }
 }
 
-// ========== LOAD DATA ==========
+// ========== LOAD DATA DARI SHEET REKAP ==========
 async function loadData() {
     showLoading(true);
     try {
         const result = await fetchAllFromSheetDB('REKAP');
+        
         if (result && result.length > 0) {
+            // Urutkan berdasarkan NO
             result.sort((a,b) => (a.NO || 0) - (b.NO || 0));
+            
             allData = result.map((row, idx) => ({
                 rowId: row.id, 
-                no: row.NO || (idx+1), 
+                no: row.NO, 
                 tanggal: row.TANGGAL_CLAIM || '',
                 userId: row.USER_ID || '', 
                 serverId: row.SERVER_ID || '', 
@@ -398,21 +426,25 @@ async function loadData() {
             updateStats([]); 
         }
     } catch(e) { 
+        console.error('Load error:', e);
         renderTable([]); 
     } finally { 
         showLoading(false); 
     }
 }
 
+// ========== RENDER TABLE ==========
 function renderTable(data) {
     const tbody = document.getElementById('tableBody');
     const search = document.getElementById('searchInput').value.toLowerCase();
     const filter = document.getElementById('filterKode').value;
-    let filtered = data;
+    let filtered = [...data];
+    
     if (search) filtered = filtered.filter(r => (r.userId && r.userId.includes(search)) || (r.nickname && r.nickname.toLowerCase().includes(search)));
     if (filter) filtered = filtered.filter(r => r.kodeEvent === filter);
+    
     if (!filtered.length) { 
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px">Belum ada数据</td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada data</td></tr>'; 
         document.getElementById('tableFooter').innerHTML = ''; 
         return; 
     }
@@ -422,21 +454,21 @@ function renderTable(data) {
         total += r.pengeluaran || 0; 
         return `
             <tr>
-                <td>${r.no||i+1}</td>
-                <td>${r.tanggal||'-'}</td>
-                <td><span class="badge-success">${r.userId||'-'}</span></td>
-                <td>${r.serverId||'-'}</td>
-                <td><strong>${r.nickname||'-'}</strong></td>
-                <td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${r.kodeEvent||'-'}</span></td>
+                <td>${r.no || (i+1)}</td>
+                <td>${r.tanggal || '-'}</td>
+                <td><span class="badge-success">${r.userId || '-'}</span></td>
+                <td>${r.serverId || '-'}</td>
+                <td><strong>${r.nickname || '-'}</strong></td>
+                <td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${r.kodeEvent || '-'}</span></td>
                 <td>${formatRupiah(r.totalTopup)}</td>
-                <td>${r.hadiah||'-'}</td>
-                <td>${r.diamond||'-'} Diamond</td>
+                <td>${r.hadiah || '-'}</td>
+                <td>${r.diamond || '-'} Diamond</td>
                 <td style="color:#fbbf24;font-weight:700">${formatRupiah(r.pengeluaran)}</td>
                 <td><button class="btn-danger-small" onclick="prepareDelete('${r.rowId}')"><i class="fas fa-trash"></i> Hapus</button></td>
             </tr>
         `; 
     }).join('');
-    document.getElementById('tableFooter').innerHTML = `<tr class="table-footer"><td colspan="9" style="text-align:right">TOTAL PENGELUARAN:</td><td colspan="2" style="font-weight:800;color:#fbbf24">${formatRupiah(total)}</td></tr>`;
+    document.getElementById('tableFooter').innerHTML = `<tr class="table-footer"><td colspan="9" style="text-align:right;font-weight:700">TOTAL PENGELUARAN:</td><td colspan="2" style="font-weight:800;color:#fbbf24">${formatRupiah(total)}</td></tr>`;
 }
 
 function updateStats(data) { 
@@ -451,12 +483,12 @@ function filterTable() {
 }
 
 // ========== PREPARE DELETE ==========
-async function prepareDelete(rowId) {
+function prepareDelete(rowId) {
     deleteTargetRowId = rowId;
     document.getElementById('deleteModal').style.display = 'flex';
 }
 
-// ========== DELETE + LOG KE SECRET (PASTIKAN MASUK) ==========
+// ========== DELETE + LOG KE SECRET ==========
 async function deleteAndReindex() {
     if (!deleteTargetRowId) { 
         showAlert('Data tidak ditemukan', 'error'); 
@@ -468,7 +500,7 @@ async function deleteAndReindex() {
     const alasan = document.getElementById('alasanHapus').value.trim();
     
     try {
-        // 1. AMBIL DATA LENGKAP DARI REKAP SEBELUM DIHAPUS
+        // 1. AMBIL DATA LENGKAP DARI REKAP
         const allRekap = await fetchAllFromSheetDB('REKAP');
         const dataToDelete = allRekap.find(row => row.id == deleteTargetRowId);
         
@@ -478,7 +510,7 @@ async function deleteAndReindex() {
             return; 
         }
         
-        // 2. LOG KE SHEET SECRET (ARSIP) - WAJIB BERHASIL
+        // 2. LOG KE SHEET SECRET (WAJIB)
         const logSuccess = await logToSecret(dataToDelete, alasan);
         if (!logSuccess) { 
             showAlert('Gagal menyimpan arsip ke SECRET!', 'error'); 
@@ -486,12 +518,13 @@ async function deleteAndReindex() {
             return; 
         }
         
-        // 3. HAPUS DATA DARI REKAP
+        // 3. HAPUS DARI REKAP
         await fetch(`${SHEETDB_API_REKAP}/${deleteTargetRowId}`, { method: 'DELETE' });
         
         // 4. REINDEX ULANG NOMOR URUT
         const remainingData = await fetchAllFromSheetDB('REKAP');
         const reindexed = remainingData.map((row, idx) => ({ ...row, NO: idx + 1 }));
+        
         for (const row of reindexed) {
             if (row.id) {
                 await fetch(`${SHEETDB_API_REKAP}/${row.id}`, { 
