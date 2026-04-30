@@ -1,38 +1,17 @@
 // ==========================================
 // CONFIGURATION FILE - EVENT TOP UP KUMULATIF
-// SESUAI STRUKTUR SHEET ANDA
+// MENGGUNAKAN SHEETDB (NO CORS ISSUE)
 // ==========================================
 
-// ========== 1. GOOGLE APPS SCRIPT URL ==========
-const API_URL = 'https://script.google.com/macros/s/AKfycbzXDVLELKp5kgWkoWpkhtdCJEppSAQRtCciPtoL4E7tQLJu3ZffyZCqyDF6siyJ7WRfkg/exec';
+// ========== 1. SHEETDB API URL ==========
+// DAFTAR GRATIS DI https://sheetdb.io
+// GANTI DENGAN URL DARI SHEETDB ANDA!
+const SHEETDB_API = 'https://sheetdb.io/api/v1/0l49sfo2dgped';
 
-// ========== 2. GOOGLE SHEETS CONFIGURASI ==========
-const SHEETS_CONFIG = {
-    spreadsheetId: '1h00WylehM60GELOKRGMjU9RPQchrrg2Ak3hPOyrNCps',
-    sheetName: 'REKAP',
-    columns: {
-        no: 1,              // A
-        tanggalClaim: 2,    // B
-        userId: 3,          // C
-        serverId: 4,        // D
-        nickname: 5,        // E
-        totalTopup: 6,      // F
-        pengeluaran: 7,     // G
-        diamond: 8          // H
-    },
-    headers: [
-        'NO',
-        'TANGGAL_CLAIM',
-        'USER_ID',
-        'SERVER_ID',
-        'NICKNAME',
-        'TOTAL_TOPUP_RP',
-        'PENGELUARAN_RP',
-        'DIAMOND'
-    ]
-};
+// Nama sheet yang digunakan
+const SHEET_NAME = 'REKAP';
 
-// ========== 3. DATA HADIAH (SESUAI KATALOG) ==========
+// ========== 2. DATA HADIAH (SESUAI KATALOG) ==========
 const HADIAH_MAP = {
     '100000': { 
         kode: 'A', 
@@ -99,7 +78,7 @@ const HADIAH_MAP = {
     }
 };
 
-// ========== 4. FUNGSI FORMATTER ==========
+// ========== 3. FUNGSI FORMATTER ==========
 function formatRupiah(angka) {
     if (!angka && angka !== 0) return 'Rp 0';
     return new Intl.NumberFormat('id-ID', {
@@ -135,11 +114,11 @@ function validateServerId(serverId) {
     return /^\d+$/.test(serverId);
 }
 
-// Ekspor untuk penggunaan
+// ========== 4. EKSPOR ==========
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        API_URL,
-        SHEETS_CONFIG,
+        SHEETDB_API,
+        SHEET_NAME,
         HADIAH_MAP,
         formatRupiah,
         formatNumber,
