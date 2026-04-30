@@ -95,13 +95,13 @@
         </div>
     </div>
     <div class="card">
-        <div class="card-header"><h2><i class="fas fa-table-list"></i> Data Rekap Claim</h2><div class="btn-group"><button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button><button class="btn-outline" onclick="syncToGoogleSheets()"><i class="fas fa-cloud-upload-alt"></i> Sync</button></div></div>
+        <div class="card-header"><h2><i class="fas fa-table-list"></i> Data Rekap Claim</h2><div class="btn-group"><button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button><button class="btn-outline" onclick="syncData()"><i class="fas fa-cloud-upload-alt"></i> Sync</button></div></div>
         <div class="card-body">
             <div class="search-section"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()"></div><div class="filter-group"><select id="filterKode" onchange="filterTable()"><option value="">Semua Kode Event</option><option value="A">A - 100K → 10 Diamond</option><option value="B">B - 200K → 20 Diamond</option><option value="C">C - 300K → 30 Diamond</option><option value="D">D - 400K → 40 Diamond</option><option value="E">E - 500K → 50 Diamond</option><option value="F">F - 1JT → 100 Diamond</option><option value="G">G - 2JT → 200 Diamond</option><option value="H">H - 5JT → 500 Diamond</option><option value="I">I - 10JT → TP + 1000 Diamond</option></select></div></div>
             <div class="table-wrapper">
                 <table id="rekapTable">
                     <thead><tr><th>NO</th><th>TANGGAL</th><th>USER ID</th><th>SERVER ID</th><th>NICKNAME</th><th>KODE</th><th>TOTAL TOP UP</th><th>HADIAH</th><th>DIAMOND</th><th>PENGELUARAN</th><th>AKSI</th></tr></thead>
-                    <tbody id="tableBody"><tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database" style="font-size:32px;color:#475569"></i><br>Belum ada data</td></tr></tbody>
+                    <tbody id="tableBody"><tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database" style="font-size:32px;color:#475569"></i><br>Belum ada数据</td></tr></tbody>
                     <tfoot id="tableFooter"></tfoot>
                 </table>
             </div>
@@ -111,32 +111,32 @@
 <div id="loadingOverlay" class="loading-overlay"><div class="loading-spinner"></div><p>Memproses data...</p></div>
 <div id="deleteModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3><button class="close" onclick="closeModal()">&times;</button></div><div class="modal-body"><p>Apakah Anda yakin ingin menghapus data ini?</p><p style="color:#ef4444;font-size:13px"><i class="fas fa-exclamation-triangle"></i> Tindakan ini tidak dapat dibatalkan!</p></div><div class="modal-footer"><button class="btn-outline" onclick="closeModal()">Batal</button><button class="btn-danger" id="confirmDeleteBtn">Hapus</button></div></div></div>
 
+<script src="config.js"></script>
 <script>
-// ========== KONFIGURASI ==========
-// ✅ URL APPS SCRIPT VERSION 4 - SUDAH BENAR
-const API_URL = 'https://script.google.com/macros/s/AKfycbzXDVLELKp5kgWkoWpkhtdCJEppSAQRtCciPtoL4E7tQLJu3ZffyZCqyDF6siyJ7WRfkg/exec';
-
-// ========== DATA HADIAH ==========
-const HADIAH_MAP = {
-    '100000': { kode: 'A', hadiah: '10 Diamond', diamond: '10', harga: 2904 },
-    '200000': { kode: 'B', hadiah: '20 Diamond', diamond: '20', harga: 5809 },
-    '300000': { kode: 'C', hadiah: '30 Diamond', diamond: '30', harga: 8300 },
-    '400000': { kode: 'D', hadiah: '40 Diamond', diamond: '40', harga: 11129 },
-    '500000': { kode: 'E', hadiah: '50 Diamond', diamond: '50', harga: 13766 },
-    '1000000': { kode: 'F', hadiah: '100 Diamond', diamond: '100', harga: 26615 },
-    '2000000': { kode: 'G', hadiah: '200 Diamond', diamond: '200', harga: 55327 },
-    '5000000': { kode: 'H', hadiah: '500 Diamond', diamond: '500', harga: 77936 },
-    '10000000': { kode: 'I', hadiah: 'Twilight Pass + 1000 Diamond', diamond: '1000', harga: 304072 }
-};
+// ========== MAIN SCRIPT MENGGUNAKAN SHEETDB ==========
 
 let allData = [];
 let deleteTarget = null;
 
-function formatRupiah(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0); }
-function showAlert(msg, type) { const a = document.getElementById('alert'); a.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`; a.className = `alert ${type}`; setTimeout(() => a.style.display = 'none', 4000); }
-function showLoading(s) { document.getElementById('loadingOverlay').style.display = s ? 'flex' : 'none'; }
-function closeModal() { document.getElementById('deleteModal').style.display = 'none'; deleteTarget = null; }
-document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+// Set default date
+document.getElementById('tanggal').value = getCurrentDate();
+
+function showAlert(message, type) {
+    const alert = document.getElementById('alert');
+    const icon = type === 'success' ? 'check-circle' : (type === 'error' ? 'exclamation-circle' : 'info-circle');
+    alert.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+    alert.className = `alert ${type}`;
+    setTimeout(() => alert.style.display = 'none', 4000);
+}
+
+function showLoading(show) {
+    document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+}
+
+function closeModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    deleteTarget = null;
+}
 
 function autoFillHadiah() {
     const total = document.getElementById('totalTopup').value;
@@ -159,88 +159,262 @@ function resetForm() {
     document.getElementById('hadiah').value = '';
     document.getElementById('diamond').value = '';
     document.getElementById('pengeluaran').value = '';
+    document.getElementById('tanggal').value = getCurrentDate();
     showAlert('Form telah direset', 'success');
 }
 
 function validateInputs() {
-    const uid = document.getElementById('userId').value.trim();
-    const sid = document.getElementById('serverId').value.trim();
-    const nick = document.getElementById('nickname').value.trim();
-    const total = document.getElementById('totalTopup').value;
-    if(!uid) { showAlert('User ID harus diisi!', 'error'); return false; }
-    if(!/^\d+$/.test(uid)) { showAlert('User ID harus angka!', 'error'); return false; }
-    if(!sid) { showAlert('Server ID harus diisi!', 'error'); return false; }
-    if(!/^\d+$/.test(sid)) { showAlert('Server ID harus angka!', 'error'); return false; }
-    if(!nick) { showAlert('Nickname harus diisi!', 'error'); return false; }
-    if(!total) { showAlert('Pilih Total Top Up!', 'error'); return false; }
+    const userId = document.getElementById('userId').value.trim();
+    const serverId = document.getElementById('serverId').value.trim();
+    const nickname = document.getElementById('nickname').value.trim();
+    const totalTopup = document.getElementById('totalTopup').value;
+    
+    if (!userId) { showAlert('User ID harus diisi!', 'error'); return false; }
+    if (!/^\d+$/.test(userId)) { showAlert('User ID harus angka!', 'error'); return false; }
+    if (!serverId) { showAlert('Server ID harus diisi!', 'error'); return false; }
+    if (!/^\d+$/.test(serverId)) { showAlert('Server ID harus angka!', 'error'); return false; }
+    if (!nickname) { showAlert('Nickname harus diisi!', 'error'); return false; }
+    if (!totalTopup) { showAlert('Pilih Total Top Up!', 'error'); return false; }
     return true;
 }
 
+// ========== SAVE DATA KE SHEETDB ==========
 async function saveData() {
-    if(!validateInputs()) return;
+    if (!validateInputs()) return;
+    
     const total = document.getElementById('totalTopup').value;
-    const dh = HADIAH_MAP[total];
+    const dataHadiah = HADIAH_MAP[total];
+    
+    // Hitung NO terbaru
+    const newNo = allData.length + 1;
+    
     const formData = {
-        tanggal: document.getElementById('tanggal').value,
-        userId: document.getElementById('userId').value.trim(),
-        serverId: document.getElementById('serverId').value.trim(),
-        nickname: document.getElementById('nickname').value.trim(),
-        totalTopup: parseInt(total),
-        kodeEvent: dh.kode,
-        hadiah: dh.hadiah,
-        diamond: dh.diamond,
-        pengeluaran: dh.harga
+        NO: newNo,
+        TANGGAL_CLAIM: document.getElementById('tanggal').value,
+        USER_ID: document.getElementById('userId').value.trim(),
+        SERVER_ID: document.getElementById('serverId').value.trim(),
+        NICKNAME: document.getElementById('nickname').value.trim(),
+        TOTAL_TOPUP_RP: parseInt(total),
+        PENGELUARAN_RP: dataHadiah.harga,
+        DIAMOND: dataHadiah.diamond + ' Diamond'
     };
+    
     showLoading(true);
+    
     try {
-        const res = await fetch(API_URL, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'save', formData }) });
-        const result = await res.json();
-        if(result.status === 'success') { showAlert('Data berhasil disimpan!', 'success'); resetForm(); loadData(); }
-        else { saveToLocal(formData); showAlert('Tersimpan offline', 'warning'); loadData(); }
-    } catch(e) { saveToLocal(formData); showAlert('Koneksi terputus. Data disimpan lokal.', 'warning'); loadData(); }
-    finally { showLoading(false); }
+        const response = await fetch(SHEETDB_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: formData })
+        });
+        
+        const result = await response.json();
+        
+        if (result.created) {
+            showAlert('Data berhasil disimpan!', 'success');
+            resetForm();
+            loadData();
+        } else {
+            saveToLocal(formData);
+            showAlert('Tersimpan ke lokal (offline)', 'warning');
+            loadData();
+        }
+    } catch(e) {
+        saveToLocal(formData);
+        showAlert('Koneksi terputus. Data disimpan lokal.', 'warning');
+        loadData();
+    } finally {
+        showLoading(false);
+    }
 }
 
-function saveToLocal(data) { let ld = JSON.parse(localStorage.getItem('rekap_data') || '[]'); data.id = Date.now(); ld.push(data); localStorage.setItem('rekap_data', JSON.stringify(ld)); }
+function saveToLocal(data) {
+    let localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
+    data.id = Date.now();
+    data.timestamp = new Date().toISOString();
+    localData.push(data);
+    localStorage.setItem('rekap_data', JSON.stringify(localData));
+}
 
+// ========== LOAD DATA DARI SHEETDB ==========
 async function loadData() {
     showLoading(true);
+    
     try {
-        const res = await fetch(API_URL, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getAll' }) });
-        const result = await res.json();
-        if(result.status === 'success' && result.data && result.data.length) { allData = result.data; renderTable(allData); updateStats(allData); }
-        else loadLocalData();
-    } catch(e) { loadLocalData(); }
-    finally { showLoading(false); }
+        const response = await fetch(`${SHEETDB_API}/search?sheet=${SHEET_NAME}`);
+        const result = await response.json();
+        
+        if (result && result.length > 0) {
+            allData = result.map((row, index) => ({
+                no: row.NO || index + 1,
+                tanggal: row.TANGGAL_CLAIM || '',
+                userId: row.USER_ID || '',
+                serverId: row.SERVER_ID || '',
+                nickname: row.NICKNAME || '',
+                totalTopup: row.TOTAL_TOPUP_RP || 0,
+                pengeluaran: row.PENGELUARAN_RP || 0,
+                diamond: (row.DIAMOND || '').toString().replace(' Diamond', ''),
+                hadiah: getHadiahFromDiamond(row.DIAMOND || ''),
+                kodeEvent: getKodeFromTotal(row.TOTAL_TOPUP_RP)
+            }));
+            renderTable(allData);
+            updateStats(allData);
+        } else {
+            loadLocalData();
+        }
+    } catch(e) {
+        loadLocalData();
+    } finally {
+        showLoading(false);
+    }
 }
 
-function loadLocalData() { allData = JSON.parse(localStorage.getItem('rekap_data') || '[]'); if(allData.length) { renderTable(allData); updateStats(allData); } else { document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada data</td></tr>'; document.getElementById('tableFooter').innerHTML = ''; } }
+function getHadiahFromDiamond(diamondStr) {
+    const diamond = diamondStr.toString().replace(' Diamond', '');
+    const map = { '10':'10 Diamond', '20':'20 Diamond', '30':'30 Diamond', '40':'40 Diamond', '50':'50 Diamond', '100':'100 Diamond', '200':'200 Diamond', '500':'500 Diamond', '1000':'Twilight Pass + 1000 Diamond' };
+    return map[diamond] || diamond + ' Diamond';
+}
 
+function loadLocalData() {
+    allData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
+    if (allData.length > 0) {
+        renderTable(allData);
+        updateStats(allData);
+    } else {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database" style="font-size:32px;color:#475569"></i><br>Belum ada数据</td></tr>';
+        document.getElementById('tableFooter').innerHTML = '';
+    }
+}
+
+// ========== RENDER TABLE ==========
 function renderTable(data) {
     const tbody = document.getElementById('tableBody');
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const filter = document.getElementById('filterKode').value;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const filterKode = document.getElementById('filterKode').value;
+    
     let filtered = data;
-    if(search) filtered = filtered.filter(r => (r.userId && r.userId.toString().includes(search)) || (r.nickname && r.nickname.toLowerCase().includes(search)));
-    if(filter) filtered = filtered.filter(r => r.kodeEvent === filter);
-    if(!filtered.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-search"></i><br>Tidak ada data</td></tr>'; document.getElementById('tableFooter').innerHTML = ''; return; }
-    let total = 0;
-    tbody.innerHTML = filtered.map((r,i) => { let p = parseInt(r.pengeluaran)||0; total += p; return `<tr><td>${i+1}</td><td>${r.tanggal||'-'}</td><td><span class="badge-success"><i class="fas fa-id-card"></i> ${r.userId||'-'}</span></td><td>${r.serverId||'-'}</td><td><strong>${r.nickname||'-'}</strong></td><td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${r.kodeEvent||getKodeFromTotal(r.totalTopup)}</span></td><td>${formatRupiah(r.totalTopup)}</td><td>${r.hadiah||'-'}</td><td>${r.diamond||'-'}</td><td style="color:#fbbf24;font-weight:700">${formatRupiah(p)}</td><td><button class="btn-danger" onclick="deleteData(${r.no||r.id})"><i class="fas fa-trash"></i></button></td></tr>`; }).join('');
-    document.getElementById('tableFooter').innerHTML = `<tr class="table-footer"><td colspan="9" style="text-align:right">TOTAL PENGELUARAN CUSTOMER:</td><td colspan="2" style="font-weight:800;color:#fbbf24">${formatRupiah(total)}</td></tr>`;
+    if (searchTerm) filtered = filtered.filter(r => (r.userId && r.userId.toString().includes(searchTerm)) || (r.nickname && r.nickname.toLowerCase().includes(searchTerm)));
+    if (filterKode) filtered = filtered.filter(r => r.kodeEvent === filterKode);
+    
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-search"></i><br>Tidak ada数据</td></tr>';
+        document.getElementById('tableFooter').innerHTML = '';
+        return;
+    }
+    
+    let totalPengeluaran = 0;
+    tbody.innerHTML = filtered.map((row, index) => {
+        const pengeluaran = parseInt(row.pengeluaran) || 0;
+        totalPengeluaran += pengeluaran;
+        return `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${row.tanggal || '-'}</td>
+                <td><span class="badge-success"><i class="fas fa-id-card"></i> ${row.userId || '-'}</span></td>
+                <td>${row.serverId || '-'}</td>
+                <td><strong>${row.nickname || '-'}</strong></td>
+                <td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${row.kodeEvent || '-'}</span></td>
+                <td>${formatRupiah(row.totalTopup)}</td>
+                <td>${row.hadiah || '-'}</td>
+                <td>${row.diamond || '-'}</td>
+                <td style="color:#fbbf24;font-weight:700">${formatRupiah(pengeluaran)}</td>
+                <td><button class="btn-danger" onclick="deleteData(${row.no || row.id})"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `;
+    }).join('');
+    
+    document.getElementById('tableFooter').innerHTML = `<tr class="table-footer"><td colspan="9" style="text-align:right;font-weight:700">TOTAL PENGELUARAN:</td><td colspan="2" style="font-weight:800;color:#fbbf24">${formatRupiah(totalPengeluaran)}</td></tr>`;
 }
 
-function getKodeFromTotal(t) { const m={100000:'A',200000:'B',300000:'C',400000:'D',500000:'E',1000000:'F',2000000:'G',5000000:'H',10000000:'I'}; return m[t]||'-'; }
-function updateStats(d) { document.getElementById('totalClaim').textContent = d.length; let total=0; d.forEach(r=>total+=parseInt(r.pengeluaran)||0); document.getElementById('totalPengeluaran').textContent = formatRupiah(total); }
+function updateStats(data) {
+    document.getElementById('totalClaim').textContent = data.length;
+    let total = 0;
+    data.forEach(r => total += parseInt(r.pengeluaran) || 0);
+    document.getElementById('totalPengeluaran').textContent = formatRupiah(total);
+}
+
 function filterTable() { renderTable(allData); }
 
-function deleteData(rowNo) { deleteTarget = rowNo; document.getElementById('deleteModal').style.display = 'flex'; document.getElementById('confirmDeleteBtn').onclick = async () => { showLoading(true); try { await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', rowNo: deleteTarget }) }); showAlert('Data dihapus', 'success'); loadData(); } catch(e) { let ld = JSON.parse(localStorage.getItem('rekap_data')||'[]'); ld = ld.filter(d=>d.id!==deleteTarget && d.no!==deleteTarget); localStorage.setItem('rekap_data',JSON.stringify(ld)); showAlert('Data dihapus dari lokal','success'); loadData(); } finally { closeModal(); showLoading(false); } }; }
+// ========== DELETE DATA ==========
+function deleteData(rowNo) {
+    deleteTarget = rowNo;
+    document.getElementById('deleteModal').style.display = 'flex';
+    document.getElementById('confirmDeleteBtn').onclick = async () => {
+        showLoading(true);
+        try {
+            // Cari ID berdasarkan NO
+            const toDelete = allData.find(d => d.no === deleteTarget || d.id === deleteTarget);
+            if (toDelete && toDelete.no) {
+                await fetch(`${SHEETDB_API}/NO/${toDelete.no}`, { method: 'DELETE' });
+            }
+            showAlert('Data berhasil dihapus', 'success');
+            loadData();
+        } catch(e) {
+            let localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
+            localData = localData.filter(d => d.id !== deleteTarget && d.no !== deleteTarget);
+            localStorage.setItem('rekap_data', JSON.stringify(localData));
+            showAlert('Data dihapus dari lokal', 'success');
+            loadData();
+        } finally {
+            closeModal();
+            showLoading(false);
+        }
+    };
+}
 
-function exportToExcel() { if(!allData.length) { showAlert('Tidak ada data','error'); return; } let csv = [['NO','TANGGAL','USER_ID','SERVER_ID','NICKNAME','KODE','TOTAL_TOPUP','HADIAH','DIAMOND','PENGELUARAN'].join(',')]; allData.forEach((r,i)=>{ csv.push([i+1, r.tanggal, r.userId, r.serverId, r.nickname, r.kodeEvent||getKodeFromTotal(r.totalTopup), r.totalTopup, r.hadiah, r.diamond, r.pengeluaran].map(v=>`"${v||''}"`).join(',')); }); const blob = new Blob(["\uFEFF"+csv.join('\n')], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `rekap_event_${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(a.href); showAlert('Data diekspor!','success'); }
+// ========== EXPORT EXCEL ==========
+function exportToExcel() {
+    if (!allData || allData.length === 0) {
+        showAlert('Tidak ada data untuk diekspor', 'error');
+        return;
+    }
+    
+    const headers = ['NO','TANGGAL','USER_ID','SERVER_ID','NICKNAME','KODE','TOTAL_TOPUP','HADIAH','DIAMOND','PENGELUARAN'];
+    const csvRows = [headers.join(',')];
+    allData.forEach((row, idx) => {
+        csvRows.push([idx+1, row.tanggal, row.userId, row.serverId, row.nickname, row.kodeEvent, row.totalTopup, row.hadiah, row.diamond, row.pengeluaran].map(v => `"${v||''}"`).join(','));
+    });
+    const blob = new Blob(["\uFEFF" + csvRows.join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `rekap_event_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showAlert('Data berhasil diekspor!', 'success');
+}
 
-async function syncToGoogleSheets() { let ld = JSON.parse(localStorage.getItem('rekap_data')||'[]'); if(!ld.length) { showAlert('Tidak ada data lokal','warning'); return; } showLoading(true); let ok=0; for(let d of ld) { try { await fetch(API_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'save', formData:d }) }); ok++; } catch(e){} } if(ok) { localStorage.removeItem('rekap_data'); loadData(); showAlert(`${ok} data tersinkron`,'success'); } else showAlert('Gagal sinkron','error'); showLoading(false); }
+// ========== SYNC DATA ==========
+async function syncData() {
+    const localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
+    if (localData.length === 0) {
+        showAlert('Tidak ada data lokal', 'warning');
+        return;
+    }
+    
+    showLoading(true);
+    let success = 0;
+    for (const data of localData) {
+        try {
+            await fetch(SHEETDB_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: data })
+            });
+            success++;
+        } catch(e) {}
+    }
+    if (success) {
+        localStorage.removeItem('rekap_data');
+        loadData();
+        showAlert(`${success} data tersinkron`, 'success');
+    } else {
+        showAlert('Gagal sinkron', 'error');
+    }
+    showLoading(false);
+}
 
+// Load data saat halaman dibuka
 loadData();
-setInterval(() => { if(JSON.parse(localStorage.getItem('rekap_data')||'[]').length) syncToGoogleSheets(); }, 300000);
 </script>
 </body>
 </html>
