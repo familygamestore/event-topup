@@ -4,553 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Event Top Up Kumulatif</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            padding: 24px;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        /* ========== HEADER ========== */
-        .header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-radius: 24px;
-            padding: 24px 32px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.3);
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .header-title h1 {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #a855f7, #3b82f6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .header-title p {
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        .header-stats {
-            display: flex;
-            gap: 24px;
-        }
-
-        .stat-badge {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 12px 24px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .stat-badge .label {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 4px;
-        }
-
-        .stat-badge .value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #fbbf24;
-        }
-
-        .event-date {
-            background: rgba(139,92,246,0.2);
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 13px;
-            color: #a78bfa;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        /* ========== CARD ========== */
-        .card {
-            background: #1e293b;
-            border-radius: 20px;
-            margin-bottom: 24px;
-            border: 1px solid #334155;
-            overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
-        }
-
-        .card-header {
-            padding: 20px 24px;
-            background: rgba(0,0,0,0.2);
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .card-header h2 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #f1f5f9;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-header h2 i {
-            color: #a855f7;
-        }
-
-        .card-body {
-            padding: 24px;
-        }
-
-        /* ========== FORM ========== */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .form-group label i {
-            font-size: 12px;
-            color: #a855f7;
-        }
-
-        .form-group label .required {
-            color: #ef4444;
-        }
-
-        .form-group input, .form-group select {
-            padding: 12px 16px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            font-size: 14px;
-            color: #f1f5f9;
-            transition: all 0.2s;
-            font-family: 'Inter', monospace;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #a855f7;
-            box-shadow: 0 0 0 3px rgba(168,85,247,0.2);
-        }
-
-        .form-group input::placeholder {
-            color: #475569;
-        }
-
-        .form-group input:invalid {
-            border-color: #ef4444;
-        }
-
-        .form-group small {
-            font-size: 11px;
-            color: #475569;
-        }
-
-        .form-group input.error {
-            border-color: #ef4444;
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, #a855f7, #7c3aed);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            margin-top: 28px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(168,85,247,0.4);
-        }
-
-        /* ========== BUTTONS ========== */
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 13px;
-            color: white;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px -3px rgba(59,130,246,0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 13px;
-            color: white;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #334155;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 13px;
-            color: #94a3b8;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: #a855f7;
-            color: #a855f7;
-        }
-
-        /* ========== SEARCH & FILTER ========== */
-        .search-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #0f172a;
-            padding: 8px 16px;
-            border-radius: 40px;
-            border: 1px solid #334155;
-        }
-
-        .search-box i {
-            color: #64748b;
-        }
-
-        .search-box input {
-            background: transparent;
-            border: none;
-            padding: 8px 0;
-            width: 250px;
-            color: #f1f5f9;
-            font-size: 14px;
-        }
-
-        .search-box input:focus {
-            outline: none;
-        }
-
-        .filter-group select {
-            background: #0f172a;
-            border: 1px solid #334155;
-            padding: 8px 16px;
-            border-radius: 40px;
-            color: #f1f5f9;
-            font-size: 13px;
-        }
-
-        /* ========== TABLE ========== */
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 12px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        th {
-            text-align: left;
-            padding: 14px 12px;
-            background: #0f172a;
-            color: #94a3b8;
-            font-weight: 500;
-            font-size: 12px;
-            border-bottom: 1px solid #334155;
-            position: sticky;
-            top: 0;
-        }
-
-        td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #334155;
-            color: #e2e8f0;
-        }
-
-        tr:hover {
-            background: rgba(255,255,255,0.02);
-        }
-
-        .table-footer {
-            background: #0f172a;
-            border-top: 1px solid #334155;
-        }
-
-        .table-footer td {
-            font-weight: 700;
-            color: #fbbf24;
-        }
-
-        /* ========== ALERT ========== */
-        .alert {
-            padding: 14px 18px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: none;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-        }
-
-        .alert.success {
-            background: rgba(16,185,129,0.2);
-            border: 1px solid #10b981;
-            color: #10b981;
-            display: flex;
-        }
-
-        .alert.error {
-            background: rgba(239,68,68,0.2);
-            border: 1px solid #ef4444;
-            color: #ef4444;
-            display: flex;
-        }
-
-        .alert.warning {
-            background: rgba(245,158,11,0.2);
-            border: 1px solid #f59e0b;
-            color: #f59e0b;
-            display: flex;
-        }
-
-        /* ========== LOADING ========== */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid #334155;
-            border-top-color: #a855f7;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
-        }
-
-        .loading-overlay p {
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ========== MODAL ========== */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1100;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-content {
-            background: #1e293b;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 500px;
-            border: 1px solid #334155;
-        }
-
-        .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            color: #f1f5f9;
-            font-size: 18px;
-        }
-
-        .modal-header .close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 24px;
-        }
-
-        .modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid #334155;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        /* ========== BADGE ========== */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 40px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .badge-success {
-            background: rgba(16,185,129,0.2);
-            color: #10b981;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 1000px) {
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .header-top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .search-section {
-                flex-direction: column;
-            }
-            
-            .search-box input {
-                width: 100%;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; padding: 24px; }
+        .container { max-width: 1600px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 24px; padding: 24px 32px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .header-title h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #a855f7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-title p { color: #94a3b8; font-size: 14px; }
+        .header-stats { display: flex; gap: 24px; }
+        .stat-badge { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 12px 24px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-badge .label { font-size: 12px; color: #94a3b8; }
+        .stat-badge .value { font-size: 24px; font-weight: 700; color: #fbbf24; }
+        .event-date { background: rgba(139,92,246,0.2); padding: 8px 16px; border-radius: 40px; font-size: 13px; color: #a78bfa; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; }
+        .card { background: #1e293b; border-radius: 20px; margin-bottom: 24px; border: 1px solid #334155; overflow: hidden; }
+        .card-header { padding: 20px 24px; background: rgba(0,0,0,0.2); border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .card-header h2 { font-size: 18px; font-weight: 600; color: #f1f5f9; display: flex; align-items: center; gap: 10px; }
+        .card-header h2 i { color: #a855f7; }
+        .card-body { padding: 24px; }
+        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 13px; font-weight: 500; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
+        .form-group label .required { color: #ef4444; }
+        .form-group input, .form-group select { padding: 12px 16px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; font-size: 14px; color: #f1f5f9; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #a855f7; }
+        .form-group small { font-size: 11px; color: #475569; }
+        .btn-submit { background: linear-gradient(135deg, #a855f7, #7c3aed); border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 28px; }
+        .btn-submit:hover { transform: translateY(-2px); }
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; padding: 10px 20px; border-radius: 10px; font-weight: 500; color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669); border: none; padding: 10px 20px; border-radius: 10px; font-weight: 500; color: white; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); border: none; padding: 8px 12px; border-radius: 8px; color: white; cursor: pointer; }
+        .btn-outline { background: transparent; border: 1px solid #334155; padding: 10px 20px; border-radius: 10px; font-weight: 500; color: #94a3b8; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-outline:hover { border-color: #a855f7; color: #a855f7; }
+        .search-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+        .search-box { display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 8px 16px; border-radius: 40px; border: 1px solid #334155; }
+        .search-box input { background: transparent; border: none; padding: 8px 0; width: 250px; color: #f1f5f9; }
+        .search-box input:focus { outline: none; }
+        .filter-group select { background: #0f172a; border: 1px solid #334155; padding: 8px 16px; border-radius: 40px; color: #f1f5f9; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 14px 12px; background: #0f172a; color: #94a3b8; font-weight: 500; border-bottom: 1px solid #334155; position: sticky; top: 0; }
+        td { padding: 14px 12px; border-bottom: 1px solid #334155; color: #e2e8f0; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        .table-footer td { font-weight: 700; color: #fbbf24; background: #0f172a; }
+        .alert { padding: 14px 18px; border-radius: 12px; margin-bottom: 20px; display: none; align-items: center; gap: 12px; font-size: 13px; }
+        .alert.success { background: rgba(16,185,129,0.2); border: 1px solid #10b981; color: #10b981; display: flex; }
+        .alert.error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; display: flex; }
+        .alert.warning { background: rgba(245,158,11,0.2); border: 1px solid #f59e0b; color: #f59e0b; display: flex; }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; }
+        .loading-spinner { width: 50px; height: 50px; border: 3px solid #334155; border-top-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1100; }
+        .modal-content { background: #1e293b; border-radius: 24px; width: 90%; max-width: 500px; border: 1px solid #334155; }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; }
+        .modal-header .close { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid #334155; display: flex; justify-content: flex-end; gap: 12px; }
+        .badge-success { background: rgba(16,185,129,0.2); color: #10b981; padding: 4px 10px; border-radius: 40px; display: inline-flex; align-items: center; gap: 6px; }
+        @media (max-width: 1000px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .header-top { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
         <div class="header">
             <div class="header-top">
                 <div class="header-title">
@@ -558,144 +77,49 @@
                     <p>Administrator Panel - Rekap Claim Customer</p>
                 </div>
                 <div class="header-stats">
-                    <div class="stat-badge">
-                        <div class="label"><i class="fas fa-users"></i> Total Claim</div>
-                        <div class="value" id="totalClaim">0</div>
-                    </div>
-                    <div class="stat-badge">
-                        <div class="label"><i class="fas fa-chart-line"></i> Total Pengeluaran Customer</div>
-                        <div class="value" id="totalPengeluaran">Rp 0</div>
-                    </div>
+                    <div class="stat-badge"><div class="label"><i class="fas fa-users"></i> Total Claim</div><div class="value" id="totalClaim">0</div></div>
+                    <div class="stat-badge"><div class="label"><i class="fas fa-chart-line"></i> Total Pengeluaran</div><div class="value" id="totalPengeluaran">Rp 0</div></div>
                 </div>
             </div>
-            <div class="event-date">
-                <i class="fas fa-calendar-alt"></i> 28 April - 30 Juni 2026
-                <i class="fas fa-gem" style="margin-left: 12px;"></i> Semakin banyak top up, semakin besar hadiah!
-            </div>
+            <div class="event-date"><i class="fas fa-calendar-alt"></i> 28 April - 30 Juni 2026 <i class="fas fa-gem" style="margin-left: 12px;"></i> Semakin banyak top up, semakin besar hadiahmu!</div>
         </div>
 
-        <!-- ALERT -->
         <div id="alert" class="alert"></div>
 
-        <!-- FORM INPUT -->
         <div class="card">
             <div class="card-header">
                 <h2><i class="fas fa-plus-circle"></i> Tambah Data Claim</h2>
-                <div class="btn-group">
-                    <button class="btn-outline" onclick="resetForm()"><i class="fas fa-undo-alt"></i> Reset</button>
-                </div>
+                <div class="btn-group"><button class="btn-outline" onclick="resetForm()"><i class="fas fa-undo-alt"></i> Reset</button></div>
             </div>
             <div class="card-body">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label><i class="fas fa-calendar"></i> Tanggal Claim <span class="required">*</span></label>
-                        <input type="date" id="tanggal" value="2026-04-30">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-id-card"></i> User ID <span class="required">*</span></label>
-                        <input type="text" id="userId" placeholder="12345678" pattern="[0-9]+" title="Hanya angka yang diperbolehkan" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        <small>Hanya angka 0-9</small>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-server"></i> Server ID <span class="required">*</span></label>
-                        <input type="text" id="serverId" placeholder="9876" pattern="[0-9]+" title="Hanya angka yang diperbolehkan" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        <small>Hanya angka 0-9</small>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> Nickname <span class="required">*</span></label>
-                        <input type="text" id="nickname" placeholder="Nickname pemain">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-chart-simple"></i> Total Top Up <span class="required">*</span></label>
-                        <select id="totalTopup" onchange="autoFillHadiah()">
-                            <option value="">-- Pilih Nominal --</option>
-                            <option value="100000">Rp 100.000</option>
-                            <option value="200000">Rp 200.000</option>
-                            <option value="300000">Rp 300.000</option>
-                            <option value="400000">Rp 400.000</option>
-                            <option value="500000">Rp 500.000</option>
-                            <option value="1000000">Rp 1.000.000</option>
-                            <option value="2000000">Rp 2.000.000</option>
-                            <option value="5000000">Rp 5.000.000</option>
-                            <option value="10000000">Rp 10.000.000</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-gift"></i> Hadiah Event</label>
-                        <input type="text" id="hadiah" readonly placeholder="Otomatis terisi" style="background:#0f172a; color:#a78bfa;">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-gem"></i> Diamond</label>
-                        <input type="text" id="diamond" readonly placeholder="Otomatis terisi" style="background:#0f172a; color:#a78bfa;">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-money-bill-wave"></i> Pengeluaran (Rp)</label>
-                        <input type="text" id="pengeluaran" readonly placeholder="Otomatis terisi" style="background:#0f172a; color:#fbbf24; font-weight:700;">
-                    </div>
-                    <div class="form-group">
-                        <button class="btn-submit" onclick="saveData()"><i class="fas fa-save"></i> Simpan Data</button>
-                    </div>
+                    <div class="form-group"><label><i class="fas fa-calendar"></i> Tanggal Claim <span class="required">*</span></label><input type="date" id="tanggal"></div>
+                    <div class="form-group"><label><i class="fas fa-id-card"></i> User ID <span class="required">*</span></label><input type="text" id="userId" placeholder="12345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')"><small>Hanya angka 0-9</small></div>
+                    <div class="form-group"><label><i class="fas fa-server"></i> Server ID <span class="required">*</span></label><input type="text" id="serverId" placeholder="9876" oninput="this.value = this.value.replace(/[^0-9]/g, '')"><small>Hanya angka 0-9</small></div>
+                    <div class="form-group"><label><i class="fas fa-user"></i> Nickname <span class="required">*</span></label><input type="text" id="nickname" placeholder="Nickname pemain"></div>
+                    <div class="form-group"><label><i class="fas fa-chart-simple"></i> Total Top Up <span class="required">*</span></label><select id="totalTopup" onchange="autoFillHadiah()"><option value="">-- Pilih Nominal --</option><option value="100000">Rp 100.000</option><option value="200000">Rp 200.000</option><option value="300000">Rp 300.000</option><option value="400000">Rp 400.000</option><option value="500000">Rp 500.000</option><option value="1000000">Rp 1.000.000</option><option value="2000000">Rp 2.000.000</option><option value="5000000">Rp 5.000.000</option><option value="10000000">Rp 10.000.000</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-gift"></i> Hadiah Event</label><input type="text" id="hadiah" readonly placeholder="Otomatis terisi" style="background:#0f172a; color:#a78bfa;"></div>
+                    <div class="form-group"><label><i class="fas fa-gem"></i> Diamond</label><input type="text" id="diamond" readonly placeholder="Otomatis terisi" style="background:#0f172a; color:#a78bfa;"></div>
+                    <div class="form-group"><label><i class="fas fa-money-bill-wave"></i> Pengeluaran (Rp)</label><input type="text" id="pengeluaran" readonly placeholder="Otomatis terisi" style="background:#0f172a; color:#fbbf24; font-weight:700;"></div>
+                    <div class="form-group"><button class="btn-submit" onclick="saveData()"><i class="fas fa-save"></i> Simpan Data</button></div>
                 </div>
             </div>
         </div>
 
-        <!-- DATA REKAP -->
         <div class="card">
             <div class="card-header">
                 <h2><i class="fas fa-table-list"></i> Data Rekap Claim</h2>
-                <div class="btn-group">
-                    <button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                    <button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
-                    <button class="btn-outline" onclick="syncToGoogleSheets()"><i class="fas fa-cloud-upload-alt"></i> Sync</button>
-                </div>
+                <div class="btn-group"><button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button><button class="btn-outline" onclick="syncToGoogleSheets()"><i class="fas fa-cloud-upload-alt"></i> Sync</button></div>
             </div>
             <div class="card-body">
                 <div class="search-section">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()">
-                    </div>
-                    <div class="filter-group">
-                        <select id="filterKode" onchange="filterTable()">
-                            <option value="">Semua Kode Event</option>
-                            <option value="A">A - 100K</option>
-                            <option value="B">B - 200K</option>
-                            <option value="C">C - 300K</option>
-                            <option value="D">D - 400K</option>
-                            <option value="E">E - 500K</option>
-                            <option value="F">F - 1JT</option>
-                            <option value="G">G - 2JT</option>
-                            <option value="H">H - 5JT</option>
-                            <option value="I">I - 10JT</option>
-                        </select>
-                    </div>
+                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()"></div>
+                    <div class="filter-group"><select id="filterKode" onchange="filterTable()"><option value="">Semua Kode Event</option><option value="A">A - 100K → 10 Diamond</option><option value="B">B - 200K → 20 Diamond</option><option value="C">C - 300K → 30 Diamond</option><option value="D">D - 400K → 40 Diamond</option><option value="E">E - 500K → 50 Diamond</option><option value="F">F - 1JT → 100 Diamond</option><option value="G">G - 2JT → 200 Diamond</option><option value="H">H - 5JT → 500 Diamond</option><option value="I">I - 10JT → TP + 1000 Diamond</option></select></div>
                 </div>
-
                 <div class="table-wrapper">
                     <table id="rekapTable">
-                        <thead>
-                            <tr>
-                                <th>NO</th>
-                                <th>TANGGAL</th>
-                                <th>USER ID</th>
-                                <th>SERVER ID</th>
-                                <th>NICKNAME</th>
-                                <th>KODE</th>
-                                <th>TOTAL TOP UP</th>
-                                <th>HADIAH</th>
-                                <th>DIAMOND</th>
-                                <th>PENGELUARAN</th>
-                                <th>AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <tr>
-                                <td colspan="11" style="text-align: center; padding: 40px;">
-                                    <i class="fas fa-database" style="font-size: 32px; color:#475569; margin-bottom: 12px; display: block;"></i>
-                                    Belum ada data
-                                </td>
-                            </tr>
-                        </tbody>
+                        <thead><tr><th>NO</th><th>TANGGAL</th><th>USER ID</th><th>SERVER ID</th><th>NICKNAME</th><th>KODE</th><th>TOTAL TOP UP</th><th>HADIAH</th><th>DIAMOND</th><th>PENGELUARAN</th><th>AKSI</th></tr></thead>
+                        <tbody id="tableBody"><tr><td colspan="11" style="text-align:center; padding:40px;"><i class="fas fa-database" style="font-size:32px; color:#475569;"></i><br>Belum ada data</td></tr></tbody>
                         <tfoot id="tableFooter"></tfoot>
                     </table>
                 </div>
@@ -703,36 +127,14 @@
         </div>
     </div>
 
-    <!-- LOADING OVERLAY -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p><i class="fas fa-spinner fa-pulse"></i> Memproses data...</p>
-    </div>
-
-    <!-- MODAL DELETE -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3>
-                <button class="close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus data ini?</p>
-                <p style="color: #ef4444; font-size: 13px; margin-top: 12px;"><i class="fas fa-exclamation-triangle"></i> Tindakan ini tidak dapat dibatalkan!</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-outline" onclick="closeModal()">Batal</button>
-                <button class="btn-danger" id="confirmDeleteBtn">Hapus</button>
-            </div>
-        </div>
-    </div>
+    <div id="loadingOverlay" class="loading-overlay"><div class="loading-spinner"></div><p>Memproses data...</p></div>
+    <div id="deleteModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3><button class="close" onclick="closeModal()">&times;</button></div><div class="modal-body"><p>Apakah Anda yakin ingin menghapus data ini?</p><p style="color:#ef4444; font-size:13px;"><i class="fas fa-exclamation-triangle"></i> Tindakan ini tidak dapat dibatalkan!</p></div><div class="modal-footer"><button class="btn-outline" onclick="closeModal()">Batal</button><button class="btn-danger" id="confirmDeleteBtn">Hapus</button></div></div></div>
 
     <script>
         // ========== KONFIGURASI ==========
-        // GANTI DENGAN URL GOOGLE APPS SCRIPT ANDA!
+        // ⚠️ GANTI DENGAN URL APPS SCRIPT YANG SUDAH DIDEPLOY ULANG ⚠️
         const API_URL = 'https://script.google.com/macros/s/AKfycbzSROS9lCXmyp2V0couotPpLmJIhTCVirZv7zYjMyjXYJMnkYAV6nFim-QpGJB7x4grEw/exec';
         
-        // ========== DATA HADIAH (SESUAI KATALOG) ==========
         const HADIAH_MAP = {
             '100000': { kode: 'A', hadiah: '10 Diamond', diamond: '10', harga: 2904 },
             '200000': { kode: 'B', hadiah: '20 Diamond', diamond: '20', harga: 5809 },
@@ -745,89 +147,17 @@
             '10000000': { kode: 'I', hadiah: 'Twilight Pass + 1000 Diamond', diamond: '1000', harga: 304072 }
         };
         
-        // ========== VARIABLES ==========
         let allData = [];
         let deleteTarget = null;
         
-        // ========== HELPER FUNCTIONS ==========
-        function formatRupiah(angka) {
-            if(!angka && angka !== 0) return 'Rp 0';
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(angka);
-        }
+        function formatRupiah(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0); }
+        function showAlert(msg, type) { const a = document.getElementById('alert'); a.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`; a.className = `alert ${type}`; setTimeout(() => a.style.display = 'none', 4000); }
+        function showLoading(s) { document.getElementById('loadingOverlay').style.display = s ? 'flex' : 'none'; }
+        function closeModal() { document.getElementById('deleteModal').style.display = 'none'; deleteTarget = null; }
+        document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
         
-        function formatNumber(angka) {
-            if(!angka) return '0';
-            return new Intl.NumberFormat('id-ID').format(angka);
-        }
-        
-        function showAlert(message, type) {
-            const alert = document.getElementById('alert');
-            alert.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
-            alert.className = `alert ${type}`;
-            setTimeout(() => {
-                alert.style.display = 'none';
-            }, 4000);
-        }
-        
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-        }
-        
-        function closeModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-            deleteTarget = null;
-        }
-        
-        // ========== VALIDASI INPUT ==========
-        function validateInputs() {
-            const userId = document.getElementById('userId').value.trim();
-            const serverId = document.getElementById('serverId').value.trim();
-            const nickname = document.getElementById('nickname').value.trim();
-            const totalTopup = document.getElementById('totalTopup').value;
-            
-            if(!userId) {
-                showAlert('User ID harus diisi!', 'error');
-                document.getElementById('userId').focus();
-                return false;
-            }
-            
-            if(!/^\d+$/.test(userId)) {
-                showAlert('User ID harus berupa angka!', 'error');
-                document.getElementById('userId').focus();
-                return false;
-            }
-            
-            if(!serverId) {
-                showAlert('Server ID harus diisi!', 'error');
-                document.getElementById('serverId').focus();
-                return false;
-            }
-            
-            if(!/^\d+$/.test(serverId)) {
-                showAlert('Server ID harus berupa angka!', 'error');
-                document.getElementById('serverId').focus();
-                return false;
-            }
-            
-            if(!nickname) {
-                showAlert('Nickname harus diisi!', 'error');
-                document.getElementById('nickname').focus();
-                return false;
-            }
-            
-            if(!totalTopup) {
-                showAlert('Pilih Total Top Up terlebih dahulu!', 'error');
-                document.getElementById('totalTopup').focus();
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // ========== AUTO FILL HADIAH ==========
         function autoFillHadiah() {
             const total = document.getElementById('totalTopup').value;
-            
             if(total && HADIAH_MAP[total]) {
                 document.getElementById('hadiah').value = HADIAH_MAP[total].hadiah;
                 document.getElementById('diamond').value = HADIAH_MAP[total].diamond + ' Diamond';
@@ -839,7 +169,6 @@
             }
         }
         
-        // ========== RESET FORM ==========
         function resetForm() {
             document.getElementById('userId').value = '';
             document.getElementById('serverId').value = '';
@@ -848,296 +177,88 @@
             document.getElementById('hadiah').value = '';
             document.getElementById('diamond').value = '';
             document.getElementById('pengeluaran').value = '';
-            document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
             showAlert('Form telah direset', 'success');
         }
         
-        // ========== SAVE DATA ==========
+        function validateInputs() {
+            const uid = document.getElementById('userId').value.trim();
+            const sid = document.getElementById('serverId').value.trim();
+            const nick = document.getElementById('nickname').value.trim();
+            const total = document.getElementById('totalTopup').value;
+            if(!uid) { showAlert('User ID harus diisi!', 'error'); return false; }
+            if(!/^\d+$/.test(uid)) { showAlert('User ID harus angka!', 'error'); return false; }
+            if(!sid) { showAlert('Server ID harus diisi!', 'error'); return false; }
+            if(!/^\d+$/.test(sid)) { showAlert('Server ID harus angka!', 'error'); return false; }
+            if(!nick) { showAlert('Nickname harus diisi!', 'error'); return false; }
+            if(!total) { showAlert('Pilih Total Top Up!', 'error'); return false; }
+            return true;
+        }
+        
         async function saveData() {
             if(!validateInputs()) return;
-            
             const total = document.getElementById('totalTopup').value;
-            const dataHadiah = HADIAH_MAP[total];
-            
+            const dh = HADIAH_MAP[total];
             const formData = {
                 tanggal: document.getElementById('tanggal').value,
                 userId: document.getElementById('userId').value.trim(),
                 serverId: document.getElementById('serverId').value.trim(),
                 nickname: document.getElementById('nickname').value.trim(),
                 totalTopup: parseInt(total),
-                kodeEvent: dataHadiah.kode,
-                hadiah: dataHadiah.hadiah,
-                diamond: dataHadiah.diamond,
-                pengeluaran: dataHadiah.harga
+                kodeEvent: dh.kode,
+                hadiah: dh.hadiah,
+                diamond: dh.diamond,
+                pengeluaran: dh.harga
             };
-            
             showLoading(true);
-            
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'save', formData: formData })
-                });
-                
-                const result = await response.json();
-                
-                if(result.status === 'success') {
-                    showAlert('Data berhasil disimpan!', 'success');
-                    resetForm();
-                    loadData();
-                } else {
-                    saveToLocal(formData);
-                    showAlert('Tersimpan ke lokal (offline). Akan sync otomatis.', 'warning');
-                    loadData();
-                }
-            } catch(e) {
-                saveToLocal(formData);
-                showAlert('Koneksi terputus. Data disimpan lokal.', 'warning');
-                loadData();
-            } finally {
-                showLoading(false);
-            }
+                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'save', formData }) });
+                const result = await res.json();
+                if(result.status === 'success') { showAlert('Data berhasil disimpan!', 'success'); resetForm(); loadData(); }
+                else { saveToLocal(formData); showAlert('Tersimpan offline', 'warning'); loadData(); }
+            } catch(e) { saveToLocal(formData); showAlert('Koneksi terputus. Data disimpan lokal.', 'warning'); loadData(); }
+            finally { showLoading(false); }
         }
         
-        function saveToLocal(data) {
-            let localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
-            data.id = Date.now();
-            data.timestamp = new Date().toISOString();
-            localData.push(data);
-            localStorage.setItem('rekap_data', JSON.stringify(localData));
-        }
+        function saveToLocal(data) { let ld = JSON.parse(localStorage.getItem('rekap_data') || '[]'); data.id = Date.now(); ld.push(data); localStorage.setItem('rekap_data', JSON.stringify(ld)); }
         
-        // ========== LOAD DATA ==========
         async function loadData() {
             showLoading(true);
-            
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'getAll' })
-                });
-                
-                const result = await response.json();
-                
-                if(result.status === 'success' && result.data) {
-                    allData = result.data;
-                    renderTable(allData);
-                    updateStats(allData);
-                } else {
-                    loadLocalData();
-                }
-            } catch(e) {
-                loadLocalData();
-            } finally {
-                showLoading(false);
-            }
+                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'getAll' }) });
+                const result = await res.json();
+                if(result.status === 'success' && result.data) { allData = result.data; renderTable(allData); updateStats(allData); }
+                else loadLocalData();
+            } catch(e) { loadLocalData(); }
+            finally { showLoading(false); }
         }
         
-        function loadLocalData() {
-            const localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
-            const savedData = JSON.parse(localStorage.getItem('saved_data') || '[]');
-            allData = [...localData, ...savedData];
-            
-            if(allData.length > 0) {
-                renderTable(allData);
-                updateStats(allData);
-            } else {
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 40px;"><i class="fas fa-database" style="font-size: 32px; color:#475569; margin-bottom: 12px; display: block;"></i>Belum ada data</td></tr>';
-                document.getElementById('tableFooter').innerHTML = '';
-            }
-        }
+        function loadLocalData() { allData = JSON.parse(localStorage.getItem('rekap_data') || '[]'); if(allData.length) { renderTable(allData); updateStats(allData); } else { document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px;"><i class="fas fa-database"></i><br>Belum ada数据</td></tr>'; document.getElementById('tableFooter').innerHTML = ''; } }
         
-        // ========== RENDER TABLE ==========
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filterKode = document.getElementById('filterKode').value;
-            
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filter = document.getElementById('filterKode').value;
             let filtered = data;
-            
-            if(searchTerm) {
-                filtered = filtered.filter(row => 
-                    (row.userId && row.userId.toString().includes(searchTerm)) ||
-                    (row.nickname && row.nickname.toLowerCase().includes(searchTerm))
-                );
-            }
-            
-            if(filterKode) {
-                filtered = filtered.filter(row => row.kodeEvent === filterKode);
-            }
-            
-            if(filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 40px;"><i class="fas fa-search" style="font-size: 32px; color:#475569; margin-bottom: 12px; display: block;"></i>Tidak ada data yang ditemukan</td></tr>';
-                document.getElementById('tableFooter').innerHTML = '';
-                return;
-            }
-            
-            let totalPengeluaran = 0;
-            
-            tbody.innerHTML = filtered.map((row, index) => {
-                const pengeluaran = parseInt(row.pengeluaran) || 0;
-                totalPengeluaran += pengeluaran;
-                const kodeEvent = row.kodeEvent || getKodeFromTotal(row.totalTopup);
-                
-                return `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${row.tanggal || '-'}</td>
-                        <td><span class="badge badge-success"><i class="fas fa-id-card"></i> ${row.userId || '-'}</span></td>
-                        <td>${row.serverId || '-'}</td>
-                        <td><strong>${row.nickname || '-'}</strong></td>
-                        <td><span style="background:#7c3aed20; padding:4px 10px; border-radius:20px; font-weight:600;">${kodeEvent}</span></td>
-                        <td>${formatRupiah(row.totalTopup)}</td>
-                        <td>${row.hadiah || '-'}</td>
-                        <td>${row.diamond || '-'}</td>
-                        <td style="color:#fbbf24; font-weight:700;">${formatRupiah(pengeluaran)}</td>
-                        <td>
-                            <button class="btn-danger" onclick="deleteData(${row.no || row.id})" style="padding:6px 12px;"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            
-            document.getElementById('tableFooter').innerHTML = `
-                <tr class="table-footer">
-                    <td colspan="9" style="text-align: right; font-weight: 700;">TOTAL PENGELUARAN CUSTOMER:</td>
-                    <td colspan="2" style="font-weight: 800; color: #fbbf24; font-size: 16px;">${formatRupiah(totalPengeluaran)}</td>
-                </tr>
-            `;
+            if(search) filtered = filtered.filter(r => (r.userId && r.userId.toString().includes(search)) || (r.nickname && r.nickname.toLowerCase().includes(search)));
+            if(filter) filtered = filtered.filter(r => r.kodeEvent === filter);
+            if(!filtered.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px;"><i class="fas fa-search"></i><br>Tidak ada数据</td></tr>'; document.getElementById('tableFooter').innerHTML = ''; return; }
+            let total = 0;
+            tbody.innerHTML = filtered.map((r,i) => { let p = parseInt(r.pengeluaran)||0; total += p; return `<tr><td>${i+1}</td><td>${r.tanggal||'-'}</td><td><span class="badge-success"><i class="fas fa-id-card"></i> ${r.userId||'-'}</span></td><td>${r.serverId||'-'}</td><td><strong>${r.nickname||'-'}</strong></td><td><span style="background:#7c3aed20; padding:4px 10px; border-radius:20px;">${r.kodeEvent||getKodeFromTotal(r.totalTopup)}</span></td><td>${formatRupiah(r.totalTopup)}</td><td>${r.hadiah||'-'}</td><td>${r.diamond||'-'}</td><td style="color:#fbbf24; font-weight:700;">${formatRupiah(p)}</td><td><button class="btn-danger" onclick="deleteData(${r.no||r.id})"><i class="fas fa-trash"></i></button></td></tr>`; }).join('');
+            document.getElementById('tableFooter').innerHTML = `<tr class="table-footer"><td colspan="9" style="text-align:right;">TOTAL PENGELUARAN:</td><td colspan="2" style="font-weight:800; color:#fbbf24;">${formatRupiah(total)}</td></tr>`;
         }
         
-        function getKodeFromTotal(total) {
-            const map = {
-                100000: 'A', 200000: 'B', 300000: 'C', 400000: 'D',
-                500000: 'E', 1000000: 'F', 2000000: 'G', 5000000: 'H', 10000000: 'I'
-            };
-            return map[total] || '-';
-        }
+        function getKodeFromTotal(t) { const m={100000:'A',200000:'B',300000:'C',400000:'D',500000:'E',1000000:'F',2000000:'G',5000000:'H',10000000:'I'}; return m[t]||'-'; }
+        function updateStats(d) { document.getElementById('totalClaim').textContent = d.length; let total=0; d.forEach(r=>total+=parseInt(r.pengeluaran)||0); document.getElementById('totalPengeluaran').textContent = formatRupiah(total); }
+        function filterTable() { renderTable(allData); }
         
-        function updateStats(data) {
-            const totalClaim = data.length;
-            let totalPengeluaran = 0;
-            data.forEach(row => totalPengeluaran += parseInt(row.pengeluaran) || 0);
-            
-            document.getElementById('totalClaim').textContent = totalClaim;
-            document.getElementById('totalPengeluaran').textContent = formatRupiah(totalPengeluaran);
-        }
+        function deleteData(rowNo) { deleteTarget = rowNo; document.getElementById('deleteModal').style.display = 'flex'; document.getElementById('confirmDeleteBtn').onclick = async () => { showLoading(true); try { await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', rowNo: deleteTarget }) }); showAlert('Data dihapus', 'success'); loadData(); } catch(e) { let ld = JSON.parse(localStorage.getItem('rekap_data')||'[]'); ld = ld.filter(d=>d.id!==deleteTarget && d.no!==deleteTarget); localStorage.setItem('rekap_data',JSON.stringify(ld)); showAlert('Data dihapus dari lokal','success'); loadData(); } finally { closeModal(); showLoading(false); } }; }
         
-        function filterTable() {
-            renderTable(allData);
-        }
+        function exportToExcel() { if(!allData.length) { showAlert('Tidak ada data','error'); return; } let csv = [['NO','TANGGAL','USER_ID','SERVER_ID','NICKNAME','KODE','TOTAL_TOPUP','HADIAH','DIAMOND','PENGELUARAN'].join(',')]; allData.forEach((r,i)=>{ csv.push([i+1, r.tanggal, r.userId, r.serverId, r.nickname, r.kodeEvent||getKodeFromTotal(r.totalTopup), r.totalTopup, r.hadiah, r.diamond, r.pengeluaran].map(v=>`"${v||''}"`).join(',')); }); const blob = new Blob(["\uFEFF"+csv.join('\n')], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `rekap_event_${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(a.href); showAlert('Data diekspor!','success'); }
         
-        // ========== DELETE DATA ==========
-        function deleteData(rowNo) {
-            deleteTarget = rowNo;
-            document.getElementById('deleteModal').style.display = 'flex';
-            document.getElementById('confirmDeleteBtn').onclick = async () => {
-                showLoading(true);
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'delete', rowNo: deleteTarget })
-                    });
-                    showAlert('Data berhasil dihapus', 'success');
-                    loadData();
-                } catch(e) {
-                    let localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
-                    localData = localData.filter(d => d.id !== deleteTarget && d.no !== deleteTarget);
-                    localStorage.setItem('rekap_data', JSON.stringify(localData));
-                    showAlert('Data dihapus dari lokal', 'success');
-                    loadData();
-                } finally {
-                    closeModal();
-                    showLoading(false);
-                }
-            };
-        }
+        async function syncToGoogleSheets() { let ld = JSON.parse(localStorage.getItem('rekap_data')||'[]'); if(!ld.length) { showAlert('Tidak ada data lokal','warning'); return; } showLoading(true); let ok=0; for(let d of ld) { try { await fetch(API_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'save', formData:d }) }); ok++; } catch(e){} } if(ok) { localStorage.removeItem('rekap_data'); loadData(); showAlert(`${ok} data tersinkron`,'success'); } else showAlert('Gagal sinkron','error'); showLoading(false); }
         
-        // ========== EXPORT EXCEL ==========
-        function exportToExcel() {
-            if(!allData || allData.length === 0) {
-                showAlert('Tidak ada data untuk diekspor', 'error');
-                return;
-            }
-            
-            const headers = ['NO', 'TANGGAL_CLAIM', 'USER_ID', 'SERVER_ID', 'NICKNAME', 'KODE_EVENT', 'TOTAL_TOPUP_RP', 'HADIAH_EVENT', 'DIAMOND', 'PENGELUARAN_RP'];
-            
-            const csvRows = [headers.join(',')];
-            
-            allData.forEach((row, idx) => {
-                const values = [
-                    idx + 1,
-                    row.tanggal || '',
-                    row.userId || '',
-                    row.serverId || '',
-                    row.nickname || '',
-                    row.kodeEvent || getKodeFromTotal(row.totalTopup),
-                    row.totalTopup || 0,
-                    row.hadiah || '',
-                    row.diamond || '',
-                    row.pengeluaran || 0
-                ];
-                csvRows.push(values.map(v => `"${v}"`).join(','));
-            });
-            
-            const blob = new Blob(["\uFEFF" + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `rekap_event_topup_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showAlert('Data berhasil diekspor!', 'success');
-        }
-        
-        // ========== SYNC TO GOOGLE SHEETS ==========
-        async function syncToGoogleSheets() {
-            const localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
-            if(localData.length === 0) {
-                showAlert('Tidak ada data lokal untuk disinkronkan', 'warning');
-                return;
-            }
-            
-            showLoading(true);
-            let successCount = 0;
-            
-            for(const data of localData) {
-                try {
-                    await fetch(API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'save', formData: data })
-                    });
-                    successCount++;
-                } catch(e) {
-                    console.log('Sync failed for', data);
-                }
-            }
-            
-            if(successCount > 0) {
-                localStorage.removeItem('rekap_data');
-                loadData();
-                showAlert(`${successCount} data berhasil disinkronkan ke Google Sheets!`, 'success');
-            } else {
-                showAlert('Gagal menyinkronkan data, periksa koneksi', 'error');
-            }
-            
-            showLoading(false);
-        }
-        
-        // ========== AUTO LOAD & SYNC ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            setInterval(() => {
-                const localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
-                if(localData.length > 0) {
-                    syncToGoogleSheets();
-                }
-            }, 300000);
-        });
+        loadData();
+        setInterval(() => { if(JSON.parse(localStorage.getItem('rekap_data')||'[]').length) syncToGoogleSheets(); }, 300000);
     </script>
 </body>
 </html>
