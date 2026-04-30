@@ -4,7 +4,7 @@
 // ==========================================
 
 // ========== 1. GOOGLE APPS SCRIPT URL ==========
-const API_URL = 'https://script.google.com/macros/s/AKfycbzSROS9lCXmyp2V0couotPpLmJIhTCVirZv7zYjMyjXYJMnkYAV6nFim-QpGJB7x4grEw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzXDVLELKp5kgWkoWpkhtdCJEppSAQRtCciPtoL4E7tQLJu3ZffyZCqyDF6siyJ7WRfkg/exec';
 
 // ========== 2. GOOGLE SHEETS CONFIGURASI ==========
 const SHEETS_CONFIG = {
