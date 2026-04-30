@@ -28,11 +28,12 @@
         .form-group{display:flex;flex-direction:column;gap:8px}
         .form-group label{font-size:13px;font-weight:500;color:#94a3b8;display:flex;align-items:center;gap:6px}
         .form-group label .required{color:#ef4444}
+        .form-group label .info-icon{cursor:help;color:#a855f7;font-size:11px}
         .form-group input,.form-group select{padding:12px 16px;background:#0f172a;border:1px solid #334155;border-radius:12px;font-size:14px;color:#f1f5f9}
         .form-group input:focus,.form-group select:focus{outline:none;border-color:#a855f7}
         .form-group small{font-size:11px;color:#475569}
         .form-group input.error{border-color:#ef4444}
-        .btn-submit{background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;padding:12px 20px;border-radius:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px;width:100%}
+        .btn-submit{background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;padding:12px 20px;border-radius:12px;font-weight:600;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px}
         .btn-submit:hover{transform:translateY(-2px)}
         .btn-group{display:flex;gap:12px;flex-wrap:wrap}
         .btn-primary{background:linear-gradient(135deg,#3b82f6,#2563eb);border:none;padding:10px 20px;border-radius:10px;font-weight:500;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
@@ -47,7 +48,7 @@
         .filter-group select{background:#0f172a;border:1px solid #334155;padding:8px 16px;border-radius:40px;color:#f1f5f9}
         .table-wrapper{overflow-x:auto}
         table{width:100%;border-collapse:collapse;font-size:13px}
-        th{text-align:left;padding:14px 12px;background:#0f172a;color:#94a3b8;font-weight:500;border-bottom:1px solid #334155;position:sticky;top:0}
+        th{text-align:left;padding:14px 12px;background:#0f172a;color:#94a3b8;font-weight:500;border-bottom:1px solid #334155}
         td{padding:14px 12px;border-bottom:1px solid #334155;color:#e2e8f0}
         tr:hover{background:rgba(255,255,255,0.02)}
         .table-footer td{font-weight:700;color:#fbbf24;background:#0f172a}
@@ -86,28 +87,73 @@
     </div>
     <div id="alert" class="alert"></div>
     
+    <!-- FORM INPUT -->
     <div class="card">
         <div class="card-header"><h2><i class="fas fa-plus-circle"></i> Tambah Data Claim</h2><div class="btn-group"><button class="btn-outline" onclick="resetForm()"><i class="fas fa-undo-alt"></i> Reset</button></div></div>
         <div class="card-body">
             <div class="form-grid">
-                <div class="form-group"><label><i class="fas fa-calendar"></i> Tanggal Claim <span class="required">*</span></label><input type="date" id="tanggal"></div>
-                <div class="form-group"><label><i class="fas fa-id-card"></i> User ID <span class="required">*</span></label><input type="text" id="userId" placeholder="12345678" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><small>Hanya angka 0-9</small></div>
-                <div class="form-group"><label><i class="fas fa-server"></i> Server ID <span class="required">*</span></label><input type="text" id="serverId" placeholder="9876" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><small>Hanya angka 0-9</small></div>
-                <div class="form-group"><label><i class="fas fa-user"></i> Nickname <span class="required">*</span></label><input type="text" id="nickname" placeholder="Nickname pemain"></div>
-                <div class="form-group"><label><i class="fas fa-chart-simple"></i> Total Top Up <span class="required">*</span></label><select id="totalTopup" onchange="autoFillHadiah()"><option value="">-- Pilih Nominal --</option><option value="100000">Rp 100.000</option><option value="200000">Rp 200.000</option><option value="300000">Rp 300.000</option><option value="400000">Rp 400.000</option><option value="500000">Rp 500.000</option><option value="1000000">Rp 1.000.000</option><option value="2000000">Rp 2.000.000</option><option value="5000000">Rp 5.000.000</option><option value="10000000">Rp 10.000.000</option></select></div>
-                <div class="form-group"><label><i class="fas fa-gift"></i> Hadiah Event</label><input type="text" id="hadiah" readonly placeholder="Otomatis" style="background:#0f172a;color:#a78bfa"></div>
-                <div class="form-group"><label><i class="fas fa-gem"></i> Diamond</label><input type="text" id="diamond" readonly placeholder="Otomatis" style="background:#0f172a;color:#a78bfa"></div>
-                <div class="form-group"><label><i class="fas fa-money-bill-wave"></i> Pengeluaran Customer (Rp) <span class="required">*</span></label><input type="text" id="pengeluaranManual" placeholder="Contoh: 50000" oninput="validatePengeluaran()"><small>WAJIB diisi</small><div id="pengeluaranWarning" class="warning-text"></div></div>
-                <div class="form-group"><button class="btn-submit" onclick="saveData()"><i class="fas fa-save"></i> Simpan Data</button></div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Tanggal Claim <span class="required">*</span></label>
+                    <input type="date" id="tanggal">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> User ID <span class="required">*</span></label>
+                    <input type="text" id="userId" placeholder="12345678" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                    <small>Hanya angka 0-9</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-server"></i> Server ID <span class="required">*</span></label>
+                    <input type="text" id="serverId" placeholder="9876" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                    <small>Hanya angka 0-9</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Nickname <span class="required">*</span></label>
+                    <input type="text" id="nickname" placeholder="Nickname pemain">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-chart-simple"></i> Total Top Up Customer <span class="required">*</span></label>
+                    <select id="totalTopup" onchange="autoFillHadiah()">
+                        <option value="">-- Pilih Nominal --</option>
+                        <option value="100000">Rp 100.000</option>
+                        <option value="200000">Rp 200.000</option>
+                        <option value="300000">Rp 300.000</option>
+                        <option value="400000">Rp 400.000</option>
+                        <option value="500000">Rp 500.000</option>
+                        <option value="1000000">Rp 1.000.000</option>
+                        <option value="2000000">Rp 2.000.000</option>
+                        <option value="5000000">Rp 5.000.000</option>
+                        <option value="10000000">Rp 10.000.000</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-gift"></i> Hadiah Event <span class="required">*</span></label>
+                    <input type="text" id="hadiah" readonly placeholder="Otomatis setelah pilih nominal" style="background:#0f172a;color:#a78bfa">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-gem"></i> Diamond Diberikan <span class="required">*</span></label>
+                    <input type="text" id="diamond" readonly placeholder="Otomatis setelah pilih nominal" style="background:#0f172a;color:#a78bfa">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-money-bill-wave"></i> Pengeluaran Customer (Rp) <span class="required">*</span></label>
+                    <input type="text" id="pengeluaranManual" placeholder="Contoh: 50000" oninput="validatePengeluaran()">
+                    <small>WAJIB diisi - nominal yang dibayar customer</small>
+                    <div id="pengeluaranWarning" class="warning-text"></div>
+                </div>
+                <div class="form-group">
+                    <button class="btn-submit" onclick="saveData()"><i class="fas fa-save"></i> Simpan Data</button>
+                </div>
             </div>
-            <div class="hint-box"><i class="fas fa-exclamation-triangle"></i> <strong>Perhatian:</strong> Semua kolom wajib diisi!</div>
+            <div class="hint-box">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Perhatian:</strong> Semua kolom bertanda <strong class="required">*</strong> wajib diisi!
+            </div>
         </div>
     </div>
     
+    <!-- DATA REKAP -->
     <div class="card">
         <div class="card-header"><h2><i class="fas fa-table-list"></i> Data Rekap Claim</h2><div class="btn-group"><button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button></div></div>
         <div class="card-body">
-            <div class="search-section"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()"></div><div class="filter-group"><select id="filterKode" onchange="filterTable()"><option value="">Semua</option><option value="A">A - 100K</option><option value="B">B - 200K</option><option value="C">C - 300K</option><option value="D">D - 400K</option><option value="E">E - 500K</option><option value="F">F - 1JT</option><option value="G">G - 2JT</option><option value="H">H - 5JT</option><option value="I">I - 10JT</option></select></div></div>
+            <div class="search-section"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()"></div><div class="filter-group"><select id="filterKode" onchange="filterTable()"><option value="">Semua Kode Event</option><option value="A">A - 100K</option><option value="B">B - 200K</option><option value="C">C - 300K</option><option value="D">D - 400K</option><option value="E">E - 500K</option><option value="F">F - 1JT</option><option value="G">G - 2JT</option><option value="H">H - 5JT</option><option value="I">I - 10JT</option></select></div></div>
             <div class="table-wrapper">
                 <table id="rekapTable">
                     <thead><tr><th>NO</th><th>TANGGAL</th><th>USER ID</th><th>SERVER ID</th><th>NICKNAME</th><th>KODE</th><th>TOTAL TOP UP</th><th>HADIAH</th><th>DIAMOND</th><th>PENGELUARAN</th><th>AKSI</th></tr></thead>
@@ -119,12 +165,13 @@
     </div>
 </div>
 
+<!-- MODAL DELETE -->
 <div id="deleteModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3><button class="close" onclick="closeModal()">&times;</button></div>
         <div class="modal-body">
             <p>Apakah Anda yakin ingin menghapus data ini?</p>
-            <p style="color:#ef4444;font-size:13px;margin-bottom:15px"><i class="fas fa-exclamation-triangle"></i> Data akan DIPINDAHKAN ke sheet SECRET (arsip)</p>
+            <p style="color:#ef4444;font-size:13px;margin-bottom:15px"><i class="fas fa-exclamation-triangle"></i> Data akan dipindahkan ke sheet SECRET (arsip)</p>
             <div class="form-group"><label><i class="fas fa-pencil-alt"></i> Alasan Penghapusan</label><input type="text" id="alasanHapus" placeholder="Contoh: Data duplikat" style="width:100%;padding:10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#fff"></div>
         </div>
         <div class="modal-footer"><button class="btn-outline" onclick="closeModal()">Batal</button><button class="btn-danger" id="confirmDeleteBtn">Hapus & Arsipkan</button></div>
@@ -135,11 +182,12 @@
 
 <script src="config.js"></script>
 <script>
-// ========== MAIN SCRIPT ==========
+// ========== MAIN SCRIPT - FIXED ALL ==========
 
 let allData = [];
-let deleteTargetNo = null;
+let deleteTargetRowId = null;
 
+// Set default date
 document.getElementById('tanggal').value = getCurrentDate();
 
 function showAlert(message, type) {
@@ -156,14 +204,16 @@ function showLoading(show) {
 
 function closeModal() {
     document.getElementById('deleteModal').style.display = 'none';
-    deleteTargetNo = null;
+    deleteTargetRowId = null;
     document.getElementById('alasanHapus').value = '';
 }
 
+// ========== VALIDASI PENGELUARAN (WAJIB DIISI) ==========
 function validatePengeluaran() {
     let input = document.getElementById('pengeluaranManual');
     let value = input.value.replace(/[^0-9]/g, '');
     const warning = document.getElementById('pengeluaranWarning');
+    
     if (value === '' || value === '0') {
         warning.innerHTML = '⚠️ Wajib diisi!';
         warning.className = 'warning-text';
@@ -182,6 +232,7 @@ function parseRupiahToNumber(rupiahString) {
     return parseInt(rupiahString.replace(/[^0-9]/g, '')) || 0;
 }
 
+// ========== AUTO FILL HADIAH & DIAMOND ==========
 function autoFillHadiah() {
     const total = document.getElementById('totalTopup').value;
     if(total && HADIAH_MAP[total]) {
@@ -206,28 +257,50 @@ function resetForm() {
     document.getElementById('pengeluaranManual').classList.remove('error');
 }
 
+// ========== VALIDASI SEMUA INPUT ==========
 function validateInputs() {
     const userId = document.getElementById('userId').value.trim();
     const serverId = document.getElementById('serverId').value.trim();
     const nickname = document.getElementById('nickname').value.trim();
     const totalTopup = document.getElementById('totalTopup').value;
+    const hadiah = document.getElementById('hadiah').value;
+    const diamond = document.getElementById('diamond').value;
     const pengeluaranManual = document.getElementById('pengeluaranManual').value;
     const pengeluaranAngka = parseRupiahToNumber(pengeluaranManual);
     
+    // Validasi User ID
     if (!userId) { showAlert('User ID harus diisi!', 'error'); return false; }
     if (!/^\d+$/.test(userId)) { showAlert('User ID harus angka!', 'error'); return false; }
+    
+    // Validasi Server ID
     if (!serverId) { showAlert('Server ID harus diisi!', 'error'); return false; }
     if (!/^\d+$/.test(serverId)) { showAlert('Server ID harus angka!', 'error'); return false; }
+    
+    // Validasi Nickname
     if (!nickname) { showAlert('Nickname harus diisi!', 'error'); return false; }
-    if (!totalTopup) { showAlert('Pilih Total Top Up!', 'error'); return false; }
+    
+    // Validasi Total Top Up
+    if (!totalTopup) { showAlert('Pilih Total Top Up Customer!', 'error'); return false; }
+    
+    // Validasi Hadiah (otomatis, tapi harus terisi)
+    if (!hadiah) { showAlert('Hadiah Event tidak valid, pilih ulang Total Top Up!', 'error'); return false; }
+    
+    // Validasi Diamond (otomatis, tapi harus terisi)
+    if (!diamond) { showAlert('Diamond tidak valid, pilih ulang Total Top Up!', 'error'); return false; }
+    
+    // Validasi Pengeluaran (WAJIB)
     if (!pengeluaranManual || pengeluaranManual.trim() === '' || pengeluaranAngka === 0) {
-        showAlert('Pengeluaran Customer WAJIB diisi!', 'error');
+        showAlert('❌ Pengeluaran Customer WAJIB diisi!', 'error');
         document.getElementById('pengeluaranManual').focus();
+        document.getElementById('pengeluaranWarning').innerHTML = '⚠️ Wajib diisi!';
+        document.getElementById('pengeluaranManual').classList.add('error');
         return false;
     }
+    
     return true;
 }
 
+// ========== SAVE DATA KE SHEET REKAP ==========
 async function saveData() {
     if (!validateInputs()) return;
     
@@ -235,7 +308,9 @@ async function saveData() {
     const dataHadiah = HADIAH_MAP[total];
     const nilaiPengeluaran = parseRupiahToNumber(document.getElementById('pengeluaranManual').value);
     
+    // Ambil data existing untuk menentukan NO terbaru
     const currentData = await fetchAllFromSheetDB('REKAP');
+    // Filter hanya data yang valid (NO tidak null/undefined)
     const validData = currentData.filter(row => row.NO !== null && row.NO !== undefined && row.NO !== '');
     const newNo = validData.length + 1;
     
@@ -259,24 +334,27 @@ async function saveData() {
         });
         const result = await response.json();
         if (result.created) { 
-            showAlert('✅ Data berhasil disimpan!', 'success'); 
+            showAlert('✅ Data berhasil disimpan ke Google Sheets!', 'success'); 
             resetForm(); 
             await loadData(); 
         } else { 
             showAlert('Gagal menyimpan: ' + JSON.stringify(result), 'error'); 
         }
     } catch(e) { 
-        showAlert('❌ Koneksi gagal', 'error'); 
+        console.error('Save error:', e);
+        showAlert('❌ Koneksi gagal. Data tidak tersimpan.', 'error'); 
     } finally { 
         showLoading(false); 
     }
 }
 
+// ========== FETCH DATA DARI SHEETDB ==========
 async function fetchAllFromSheetDB(sheet = 'REKAP') {
     const api = sheet === 'SECRET' ? SHEETDB_API_SECRET : SHEETDB_API_REKAP;
     try { 
         const res = await fetch(api); 
         const data = await res.json();
+        // Filter data yang valid (NO tidak null/undefined dan USER_ID tidak kosong)
         if (sheet === 'REKAP') {
             return data.filter(row => row.NO !== null && row.NO !== undefined && row.NO !== '' && row.USER_ID);
         }
@@ -286,6 +364,7 @@ async function fetchAllFromSheetDB(sheet = 'REKAP') {
     }
 }
 
+// ========== LOG KE SHEET SECRET ==========
 async function logToSecret(data, alasan) {
     const logData = {
         ID_HAPUS: Date.now(),
@@ -309,23 +388,27 @@ async function logToSecret(data, alasan) {
             body: JSON.stringify({ data: logData }) 
         });
         const result = await response.json();
-        console.log('Log ke SECRET response:', result);
-        return result.created === true;
+        console.log('✅ Log ke SECRET:', result);
+        return result.created || result.message === 'Created';
     } catch(e) { 
-        console.error('Gagal log ke SECRET:', e); 
+        console.error('Gagal log:', e); 
         return false; 
     }
 }
 
+// ========== LOAD DATA DARI SHEET REKAP ==========
 async function loadData() {
     showLoading(true);
     try {
         const result = await fetchAllFromSheetDB('REKAP');
+        
         if (result && result.length > 0) {
+            // Urutkan berdasarkan NO
             result.sort((a,b) => (a.NO || 0) - (b.NO || 0));
-            allData = result.map((row) => ({
+            
+            allData = result.map((row, idx) => ({
+                rowId: row.id, 
                 no: row.NO, 
-                rowId: row.id,
                 tanggal: row.TANGGAL_CLAIM || '',
                 userId: row.USER_ID || '', 
                 serverId: row.SERVER_ID || '', 
@@ -343,40 +426,47 @@ async function loadData() {
             updateStats([]); 
         }
     } catch(e) { 
+        console.error('Load error:', e);
         renderTable([]); 
     } finally { 
         showLoading(false); 
     }
 }
 
+// ========== RENDER TABLE ==========
 function renderTable(data) {
     const tbody = document.getElementById('tableBody');
     const search = document.getElementById('searchInput').value.toLowerCase();
     const filter = document.getElementById('filterKode').value;
     let filtered = [...data];
+    
     if (search) filtered = filtered.filter(r => (r.userId && r.userId.includes(search)) || (r.nickname && r.nickname.toLowerCase().includes(search)));
     if (filter) filtered = filtered.filter(r => r.kodeEvent === filter);
+    
     if (!filtered.length) { 
-        tbody.innerHTML = '<td><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada数据</td></tr>'; 
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada data</td></tr>'; 
         document.getElementById('tableFooter').innerHTML = ''; 
         return; 
     }
+    
     let total = 0;
     tbody.innerHTML = filtered.map((r,i) => { 
         total += r.pengeluaran || 0; 
-        return `<tr>
-            <td>${r.no || (i+1)}</td>
-            <td>${r.tanggal || '-'}</td>
-            <td><span class="badge-success">${r.userId || '-'}</span></td>
-            <td>${r.serverId || '-'}</td>
-            <td><strong>${r.nickname || '-'}</strong></td>
-            <td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${r.kodeEvent || '-'}</span></td>
-            <td>${formatRupiah(r.totalTopup)}</td>
-            <td>${r.hadiah || '-'}</td>
-            <td>${r.diamond || '-'} Diamond</td>
-            <td style="color:#fbbf24;font-weight:700">${formatRupiah(r.pengeluaran)}</td>
-            <td><button class="btn-danger-small" onclick="prepareDelete(${r.no})"><i class="fas fa-trash"></i> Hapus</button></td>
-        </tr>`; 
+        return `
+            <tr>
+                <td>${r.no || (i+1)}</td>
+                <td>${r.tanggal || '-'}</td>
+                <td><span class="badge-success">${r.userId || '-'}</span></td>
+                <td>${r.serverId || '-'}</td>
+                <td><strong>${r.nickname || '-'}</strong></td>
+                <td><span style="background:#7c3aed20;padding:4px 10px;border-radius:20px">${r.kodeEvent || '-'}</span></td>
+                <td>${formatRupiah(r.totalTopup)}</td>
+                <td>${r.hadiah || '-'}</td>
+                <td>${r.diamond || '-'} Diamond</td>
+                <td style="color:#fbbf24;font-weight:700">${formatRupiah(r.pengeluaran)}</td>
+                <td><button class="btn-danger-small" onclick="prepareDelete('${r.rowId}')"><i class="fas fa-trash"></i> Hapus</button></td>
+            </tr>
+        `; 
     }).join('');
     document.getElementById('tableFooter').innerHTML = `<tr class="table-footer"><td colspan="9" style="text-align:right;font-weight:700">TOTAL PENGELUARAN:</td><td colspan="2" style="font-weight:800;color:#fbbf24">${formatRupiah(total)}</td></tr>`;
 }
@@ -392,13 +482,15 @@ function filterTable() {
     if (allData.length > 0) renderTable(allData); 
 }
 
-function prepareDelete(no) {
-    deleteTargetNo = no;
+// ========== PREPARE DELETE ==========
+function prepareDelete(rowId) {
+    deleteTargetRowId = rowId;
     document.getElementById('deleteModal').style.display = 'flex';
 }
 
+// ========== DELETE + LOG KE SECRET ==========
 async function deleteAndReindex() {
-    if (!deleteTargetNo) { 
+    if (!deleteTargetRowId) { 
         showAlert('Data tidak ditemukan', 'error'); 
         closeModal(); 
         return; 
@@ -408,24 +500,28 @@ async function deleteAndReindex() {
     const alasan = document.getElementById('alasanHapus').value.trim();
     
     try {
+        // 1. AMBIL DATA LENGKAP DARI REKAP
         const allRekap = await fetchAllFromSheetDB('REKAP');
-        const dataToDelete = allRekap.find(row => row.NO == deleteTargetNo);
+        const dataToDelete = allRekap.find(row => row.id == deleteTargetRowId);
         
         if (!dataToDelete) { 
-            showAlert(`Data dengan NO ${deleteTargetNo} tidak ditemukan`, 'error'); 
+            showAlert('Data tidak ditemukan di Google Sheets', 'error'); 
             closeModal(); 
             return; 
         }
         
+        // 2. LOG KE SHEET SECRET (WAJIB)
         const logSuccess = await logToSecret(dataToDelete, alasan);
         if (!logSuccess) { 
-            showAlert('❌ Gagal menyimpan arsip ke SECRET!', 'error'); 
+            showAlert('Gagal menyimpan arsip ke SECRET!', 'error'); 
             showLoading(false); 
             return; 
         }
         
-        await fetch(`${SHEETDB_API_REKAP}/NO/${deleteTargetNo}`, { method: 'DELETE' });
+        // 3. HAPUS DARI REKAP
+        await fetch(`${SHEETDB_API_REKAP}/${deleteTargetRowId}`, { method: 'DELETE' });
         
+        // 4. REINDEX ULANG NOMOR URUT
         const remainingData = await fetchAllFromSheetDB('REKAP');
         const reindexed = remainingData.map((row, idx) => ({ ...row, NO: idx + 1 }));
         
@@ -439,18 +535,19 @@ async function deleteAndReindex() {
             }
         }
         
-        showAlert('✅ Data berhasil dihapus & dipindahkan ke arsip SECRET!', 'success');
+        showAlert('✅ Data dihapus & dipindahkan ke arsip SECRET!', 'success');
         await loadData();
         
     } catch(e) { 
         console.error('Delete error:', e); 
-        showAlert('❌ Gagal menghapus data: ' + e.message, 'error'); 
+        showAlert('❌ Gagal menghapus data', 'error'); 
     } finally { 
         closeModal(); 
         showLoading(false); 
     }
 }
 
+// ========== EXPORT EXCEL ==========
 function exportToExcel() {
     if (!allData.length) { 
         showAlert('Tidak ada data', 'error'); 
