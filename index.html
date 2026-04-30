@@ -70,8 +70,6 @@
         .btn-danger-small{background:linear-gradient(135deg,#ef4444,#dc2626);border:none;padding:6px 12px;border-radius:6px;color:#fff;cursor:pointer;font-size:12px}
         .btn-danger-small:hover{transform:scale(1.02)}
         .sync-status{font-size:11px;color:#10b981;margin-left:10px}
-        .currency-input{position:relative}
-        .currency-input::before{content:"Rp";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px}
         .hint-box{background:rgba(168,85,247,0.1);border-radius:8px;padding:8px 12px;font-size:11px;color:#a78bfa;margin-top:4px}
     </style>
 </head>
@@ -163,16 +161,42 @@
         </div>
     </div>
 </div>
+
+<!-- MODAL DELETE DENGAN ALASAN -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus & Catat ke SECRET</h3>
+            <button class="close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Apakah Anda yakin ingin menghapus data ini?</p>
+            <p style="color:#ef4444;font-size:13px;margin-bottom:15px">
+                <i class="fas fa-exclamation-triangle"></i> Data akan dihapus dari Google Sheets REKAP<br>
+                <i class="fas fa-archive"></i> Data akan DIPINDAHKAN ke sheet SECRET (arsip)
+            </p>
+            <div class="form-group" style="margin-top:15px">
+                <label><i class="fas fa-pencil-alt"></i> Alasan Penghapusan (Opsional)</label>
+                <input type="text" id="alasanHapus" placeholder="Contoh: Data duplikat, Salah input, dll" style="width:100%;padding:10px;border-radius:8px;background:#0f172a;border:1px solid #334155;color:#fff">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" onclick="closeModal()">Batal</button>
+            <button class="btn-danger" id="confirmDeleteBtn">Hapus & Arsipkan ke SECRET</button>
+        </div>
+    </div>
+</div>
+
 <div id="loadingOverlay" class="loading-overlay"><div class="loading-spinner"></div><p>Memproses data...</p></div>
-<div id="deleteModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3><button class="close" onclick="closeModal()">&times;</button></div><div class="modal-body"><p>Apakah Anda yakin ingin menghapus data ini?</p><p style="color:#ef4444;font-size:13px"><i class="fas fa-exclamation-triangle"></i> Data akan dihapus dari Google Sheets!<br>Nomor urut akan otomatis berurutan kembali.</p></div><div class="modal-footer"><button class="btn-outline" onclick="closeModal()">Batal</button><button class="btn-danger" id="confirmDeleteBtn">Hapus & Reindex</button></div></div></div>
 
 <script src="config.js"></script>
 <script>
-// ========== MAIN SCRIPT - PENGELUARAN MANUAL ==========
+// ========== MAIN SCRIPT - DENGAN DELETE LOG KE SHEET SECRET ==========
 
 let allData = [];
 let deleteTarget = null;
 let deleteTargetRowId = null;
+let deleteTargetData = null;
 
 // Set default date
 document.getElementById('tanggal').value = getCurrentDate();
@@ -193,19 +217,16 @@ function closeModal() {
     document.getElementById('deleteModal').style.display = 'none';
     deleteTarget = null;
     deleteTargetRowId = null;
+    deleteTargetData = null;
+    document.getElementById('alasanHapus').value = '';
 }
 
-// Format input pengeluaran manual
 function formatPengeluaranManual() {
     let input = document.getElementById('pengeluaranManual');
     let value = input.value.replace(/[^0-9]/g, '');
     if (value) {
-        input.value = formatRupiahNumber(parseInt(value));
+        input.value = new Intl.NumberFormat('id-ID').format(parseInt(value));
     }
-}
-
-function formatRupiahNumber(angka) {
-    return new Intl.NumberFormat('id-ID').format(angka);
 }
 
 function parseRupiahToNumber(rupiahString) {
@@ -217,7 +238,6 @@ function autoFillHadiah() {
     if(total && HADIAH_MAP[total]) {
         document.getElementById('hadiah').value = HADIAH_MAP[total].hadiah;
         document.getElementById('diamond').value = HADIAH_MAP[total].diamond + ' Diamond';
-        // Jangan auto fill pengeluaran, biarkan manual
     } else {
         document.getElementById('hadiah').value = '';
         document.getElementById('diamond').value = '';
@@ -249,7 +269,6 @@ function validateInputs() {
     if (!nickname) { showAlert('Nickname harus diisi!', 'error'); return false; }
     if (!totalTopup) { showAlert('Pilih Total Top Up Customer!', 'error'); return false; }
     
-    // Validasi pengeluaran manual (boleh kosong, tapi harus angka jika diisi)
     if (pengeluaranManual && isNaN(parseRupiahToNumber(pengeluaranManual))) {
         showAlert('Pengeluaran harus berupa angka!', 'error');
         return false;
@@ -258,7 +277,7 @@ function validateInputs() {
     return true;
 }
 
-// ========== SAVE DATA KE SHEETDB (DENGAN PENGELUARAN MANUAL) ==========
+// ========== SAVE DATA ==========
 async function saveData() {
     if (!validateInputs()) return;
     
@@ -266,7 +285,6 @@ async function saveData() {
     const dataHadiah = HADIAH_MAP[total];
     const pengeluaranManual = document.getElementById('pengeluaranManual').value;
     
-    // Tentukan nilai pengeluaran: manual jika diisi, otherwise pakai harga katalog
     let nilaiPengeluaran;
     if (pengeluaranManual && pengeluaranManual.trim() !== '') {
         nilaiPengeluaran = parseRupiahToNumber(pengeluaranManual);
@@ -274,8 +292,7 @@ async function saveData() {
         nilaiPengeluaran = dataHadiah.harga;
     }
     
-    // Dapatkan NO terbaru
-    const currentData = await fetchAllFromSheetDB();
+    const currentData = await fetchAllFromSheetDB('REKAP');
     const newNo = (currentData && currentData.length) ? currentData.length + 1 : 1;
     
     const formData = {
@@ -292,7 +309,7 @@ async function saveData() {
     showLoading(true);
     
     try {
-        const response = await fetch(SHEETDB_API, {
+        const response = await fetch(SHEETDB_API_REKAP, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: formData })
@@ -315,10 +332,11 @@ async function saveData() {
     }
 }
 
-// ========== FETCH ALL DATA FROM SHEETDB ==========
-async function fetchAllFromSheetDB() {
+// ========== FETCH DATA DARI SHEETDB (BISA MEMILIH SHEET) ==========
+async function fetchAllFromSheetDB(sheetName = 'REKAP') {
+    const apiUrl = sheetName === 'SECRET' ? SHEETDB_API_SECRET : SHEETDB_API_REKAP;
     try {
-        const response = await fetch(SHEETDB_API);
+        const response = await fetch(apiUrl);
         const result = await response.json();
         return result;
     } catch(e) {
@@ -327,14 +345,45 @@ async function fetchAllFromSheetDB() {
     }
 }
 
-// ========== LOAD DATA DARI SHEETDB ==========
+// ========== LOG KE SHEET SECRET ==========
+async function logToSecret(dataToLog, alasan, adminName = 'Admin') {
+    const logData = {
+        ID_HAPUS: Date.now(),
+        TANGGAL_HAPUS: new Date().toISOString(),
+        NO_LAMA: dataToLog.no || dataToLog.NO || '-',
+        TANGGAL_CLAIM: dataToLog.tanggal || dataToLog.TANGGAL_CLAIM || '-',
+        USER_ID: dataToLog.userId || dataToLog.USER_ID || '-',
+        SERVER_ID: dataToLog.serverId || dataToLog.SERVER_ID || '-',
+        NICKNAME: dataToLog.nickname || dataToLog.NICKNAME || '-',
+        TOTAL_TOPUP_RP: dataToLog.totalTopup || dataToLog.TOTAL_TOPUP_RP || 0,
+        PENGELUARAN_RP: dataToLog.pengeluaran || dataToLog.PENGELUARAN_RP || 0,
+        DIAMOND: dataToLog.diamond || dataToLog.DIAMOND || '-',
+        DIHAPUS_OLEH: adminName,
+        ALASAN: alasan || 'Tidak ada alasan'
+    };
+    
+    try {
+        await fetch(SHEETDB_API_SECRET, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: logData })
+        });
+        console.log('✅ Log tersimpan ke sheet SECRET');
+        return true;
+    } catch(e) {
+        console.error('Gagal log ke SECRET:', e);
+        return false;
+    }
+}
+
+// ========== LOAD DATA DARI SHEETDB REKAP ==========
 async function loadData() {
     showLoading(true);
     document.getElementById('syncStatus').innerHTML = '● Mengambil data...';
     document.getElementById('syncStatus').style.color = '#f59e0b';
     
     try {
-        const result = await fetchAllFromSheetDB();
+        const result = await fetchAllFromSheetDB('REKAP');
         
         if (result && result.length > 0) {
             result.sort((a,b) => (a.NO || 0) - (b.NO || 0));
@@ -386,7 +435,7 @@ function renderTable(data) {
     if (filterKode) filtered = filtered.filter(r => r.kodeEvent === filterKode);
     
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada data</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database"></i><br>Belum ada数据</td></tr>';
         document.getElementById('tableFooter').innerHTML = '';
         return;
     }
@@ -428,23 +477,41 @@ function filterTable() {
 
 // ========== PREPARE DELETE ==========
 function prepareDelete(no, rowId) {
-    deleteTarget = no;
-    deleteTargetRowId = rowId;
-    document.getElementById('deleteModal').style.display = 'flex';
+    const dataToDelete = allData.find(d => d.no == no || d.rowId == rowId);
+    if (dataToDelete) {
+        deleteTarget = no;
+        deleteTargetRowId = rowId;
+        deleteTargetData = dataToDelete;
+        document.getElementById('deleteModal').style.display = 'flex';
+    } else {
+        showAlert('Data tidak ditemukan', 'error');
+    }
 }
 
-// ========== DELETE DATA + REINDEX ==========
+// ========== DELETE DATA + LOG KE SECRET + REINDEX ==========
 async function deleteAndReindex() {
+    if (!deleteTargetData) {
+        showAlert('Tidak ada data yang dipilih', 'error');
+        closeModal();
+        return;
+    }
+    
     showLoading(true);
+    const alasan = document.getElementById('alasanHapus').value.trim();
     
     try {
+        // 1. LOG KE SHEET SECRET dulu (arsip sebelum dihapus)
+        await logToSecret(deleteTargetData, alasan, 'Admin Panel');
+        
+        // 2. Hapus data dari REKAP
         if (deleteTargetRowId) {
-            await fetch(`${SHEETDB_API}/${deleteTargetRowId}`, { method: 'DELETE' });
+            await fetch(`${SHEETDB_API_REKAP}/${deleteTargetRowId}`, { method: 'DELETE' });
         } else if (deleteTarget) {
-            await fetch(`${SHEETDB_API}/NO/${deleteTarget}`, { method: 'DELETE' });
+            await fetch(`${SHEETDB_API_REKAP}/NO/${deleteTarget}`, { method: 'DELETE' });
         }
         
-        const remainingData = await fetchAllFromSheetDB();
+        // 3. Ambil data terbaru dan reindex
+        const remainingData = await fetchAllFromSheetDB('REKAP');
         
         const reindexedData = remainingData.map((row, index) => ({
             ...row,
@@ -453,7 +520,7 @@ async function deleteAndReindex() {
         
         for (const row of reindexedData) {
             if (row.id) {
-                await fetch(`${SHEETDB_API}/${row.id}`, {
+                await fetch(`${SHEETDB_API_REKAP}/${row.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data: row })
@@ -461,7 +528,7 @@ async function deleteAndReindex() {
             }
         }
         
-        showAlert('✅ Data berhasil dihapus & nomor urut diperbarui!', 'success');
+        showAlert('✅ Data berhasil dihapus & dipindahkan ke arsip SECRET!', 'success');
         await loadData();
         
     } catch(e) {
@@ -483,7 +550,11 @@ function exportToExcel() {
     const headers = ['NO','TANGGAL','USER_ID','SERVER_ID','NICKNAME','KODE','TOTAL_TOPUP','HADIAH','DIAMOND','PENGELUARAN'];
     const csvRows = [headers.join(',')];
     allData.forEach((row, idx) => {
-        csvRows.push([idx+1, row.tanggal, row.userId, row.serverId, row.nickname, row.kodeEvent, row.totalTopup, row.hadiah, row.diamond, row.pengeluaran].map(v => `"${v||''}"`).join(','));
+        const values = [
+            idx+1, row.tanggal, row.userId, row.serverId, row.nickname, 
+            row.kodeEvent, row.totalTopup, row.hadiah, row.diamond, row.pengeluaran
+        ];
+        csvRows.push(values.map(v => `"${v || ''}"`).join(','));
     });
     const blob = new Blob(["\uFEFF" + csvRows.join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
