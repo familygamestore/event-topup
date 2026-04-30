@@ -66,6 +66,8 @@
         .badge-success{background:rgba(16,185,129,0.2);color:#10b981;padding:4px 10px;border-radius:40px;display:inline-flex;align-items:center;gap:6px}
         @media(max-width:1000px){.form-grid{grid-template-columns:repeat(2,1fr)}}
         @media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+        .btn-danger-small{background:linear-gradient(135deg,#ef4444,#dc2626);border:none;padding:6px 12px;border-radius:6px;color:#fff;cursor:pointer;font-size:12px}
+        .btn-danger-small:hover{transform:scale(1.02)}
     </style>
 </head>
 <body>
@@ -95,13 +97,13 @@
         </div>
     </div>
     <div class="card">
-        <div class="card-header"><h2><i class="fas fa-table-list"></i> Data Rekap Claim</h2><div class="btn-group"><button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button><button class="btn-outline" onclick="syncData()"><i class="fas fa-cloud-upload-alt"></i> Sync</button></div></div>
+        <div class="card-header"><h2><i class="fas fa-table-list"></i> Data Rekap Claim</h2><div class="btn-group"><button class="btn-primary" onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button><button class="btn-success" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Export Excel</button></div></div>
         <div class="card-body">
             <div class="search-section"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Cari User ID / Nickname..." onkeyup="filterTable()"></div><div class="filter-group"><select id="filterKode" onchange="filterTable()"><option value="">Semua Kode Event</option><option value="A">A - 100K → 10 Diamond</option><option value="B">B - 200K → 20 Diamond</option><option value="C">C - 300K → 30 Diamond</option><option value="D">D - 400K → 40 Diamond</option><option value="E">E - 500K → 50 Diamond</option><option value="F">F - 1JT → 100 Diamond</option><option value="G">G - 2JT → 200 Diamond</option><option value="H">H - 5JT → 500 Diamond</option><option value="I">I - 10JT → TP + 1000 Diamond</option></select></div></div>
             <div class="table-wrapper">
                 <table id="rekapTable">
                     <thead><tr><th>NO</th><th>TANGGAL</th><th>USER ID</th><th>SERVER ID</th><th>NICKNAME</th><th>KODE</th><th>TOTAL TOP UP</th><th>HADIAH</th><th>DIAMOND</th><th>PENGELUARAN</th><th>AKSI</th></tr></thead>
-                    <tbody id="tableBody"><tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database" style="font-size:32px;color:#475569"></i><br>Belum ada数据</td></tr></tbody>
+                    <tbody id="tableBody"><tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database" style="font-size:32px;color:#475569"></i><br>Belum ada data</td></tr></tbody>
                     <tfoot id="tableFooter"></tfoot>
                 </table>
             </div>
@@ -109,7 +111,7 @@
     </div>
 </div>
 <div id="loadingOverlay" class="loading-overlay"><div class="loading-spinner"></div><p>Memproses data...</p></div>
-<div id="deleteModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3><button class="close" onclick="closeModal()">&times;</button></div><div class="modal-body"><p>Apakah Anda yakin ingin menghapus data ini?</p><p style="color:#ef4444;font-size:13px"><i class="fas fa-exclamation-triangle"></i> Tindakan ini tidak dapat dibatalkan!</p></div><div class="modal-footer"><button class="btn-outline" onclick="closeModal()">Batal</button><button class="btn-danger" id="confirmDeleteBtn">Hapus</button></div></div></div>
+<div id="deleteModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Konfirmasi Hapus</h3><button class="close" onclick="closeModal()">&times;</button></div><div class="modal-body"><p>Apakah Anda yakin ingin menghapus data ini?</p><p style="color:#ef4444;font-size:13px"><i class="fas fa-exclamation-triangle"></i> Tindakan ini tidak dapat dibatalkan!<br>Nomor urut akan otomatis berurutan kembali.</p></div><div class="modal-footer"><button class="btn-outline" onclick="closeModal()">Batal</button><button class="btn-danger" id="confirmDeleteBtn">Hapus & Reindex</button></div></div></div>
 
 <script src="config.js"></script>
 <script>
@@ -117,6 +119,7 @@
 
 let allData = [];
 let deleteTarget = null;
+let deleteTargetId = null;
 
 // Set default date
 document.getElementById('tanggal').value = getCurrentDate();
@@ -136,6 +139,7 @@ function showLoading(show) {
 function closeModal() {
     document.getElementById('deleteModal').style.display = 'none';
     deleteTarget = null;
+    deleteTargetId = null;
 }
 
 function autoFillHadiah() {
@@ -185,11 +189,7 @@ async function saveData() {
     const total = document.getElementById('totalTopup').value;
     const dataHadiah = HADIAH_MAP[total];
     
-    // Hitung NO terbaru
-    const newNo = allData.length + 1;
-    
     const formData = {
-        NO: newNo,
         TANGGAL_CLAIM: document.getElementById('tanggal').value,
         USER_ID: document.getElementById('userId').value.trim(),
         SERVER_ID: document.getElementById('serverId').value.trim(),
@@ -213,6 +213,7 @@ async function saveData() {
         if (result.created) {
             showAlert('Data berhasil disimpan!', 'success');
             resetForm();
+            await reindexAllData();
             loadData();
         } else {
             saveToLocal(formData);
@@ -241,12 +242,14 @@ async function loadData() {
     showLoading(true);
     
     try {
-        const response = await fetch(`${SHEETDB_API}/search?sheet=${SHEET_NAME}`);
+        const response = await fetch(SHEETDB_API);
         const result = await response.json();
         
         if (result && result.length > 0) {
+            // Urutkan berdasarkan NO jika ada, atau berdasarkan urutan asli
             allData = result.map((row, index) => ({
-                no: row.NO || index + 1,
+                id: row.id || index,
+                no: row.NO || (index + 1),
                 tanggal: row.TANGGAL_CLAIM || '',
                 userId: row.USER_ID || '',
                 serverId: row.SERVER_ID || '',
@@ -257,12 +260,15 @@ async function loadData() {
                 hadiah: getHadiahFromDiamond(row.DIAMOND || ''),
                 kodeEvent: getKodeFromTotal(row.TOTAL_TOPUP_RP)
             }));
+            // Urutkan berdasarkan NO
+            allData.sort((a,b) => (a.no || 0) - (b.no || 0));
             renderTable(allData);
             updateStats(allData);
         } else {
             loadLocalData();
         }
     } catch(e) {
+        console.error('Load error:', e);
         loadLocalData();
     } finally {
         showLoading(false);
@@ -281,7 +287,7 @@ function loadLocalData() {
         renderTable(allData);
         updateStats(allData);
     } else {
-        document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database" style="font-size:32px;color:#475569"></i><br>Belum ada数据</td></tr>';
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-database" style="font-size:32px;color:#475569"></i><br>Belum ada data</td></tr>';
         document.getElementById('tableFooter').innerHTML = '';
     }
 }
@@ -292,12 +298,12 @@ function renderTable(data) {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const filterKode = document.getElementById('filterKode').value;
     
-    let filtered = data;
+    let filtered = [...data];
     if (searchTerm) filtered = filtered.filter(r => (r.userId && r.userId.toString().includes(searchTerm)) || (r.nickname && r.nickname.toLowerCase().includes(searchTerm)));
     if (filterKode) filtered = filtered.filter(r => r.kodeEvent === filterKode);
     
     if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-search"></i><br>Tidak ada数据</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px"><i class="fas fa-search"></i><br>Tidak ada data</td></tr>';
         document.getElementById('tableFooter').innerHTML = '';
         return;
     }
@@ -306,9 +312,10 @@ function renderTable(data) {
     tbody.innerHTML = filtered.map((row, index) => {
         const pengeluaran = parseInt(row.pengeluaran) || 0;
         totalPengeluaran += pengeluaran;
+        const displayNo = row.no || (index + 1);
         return `
             <tr>
-                <td>${index + 1}</td>
+                <td>${displayNo}</td>
                 <td>${row.tanggal || '-'}</td>
                 <td><span class="badge-success"><i class="fas fa-id-card"></i> ${row.userId || '-'}</span></td>
                 <td>${row.serverId || '-'}</td>
@@ -318,7 +325,7 @@ function renderTable(data) {
                 <td>${row.hadiah || '-'}</td>
                 <td>${row.diamond || '-'}</td>
                 <td style="color:#fbbf24;font-weight:700">${formatRupiah(pengeluaran)}</td>
-                <td><button class="btn-danger" onclick="deleteData(${row.no || row.id})"><i class="fas fa-trash"></i></button></td>
+                <td><button class="btn-danger-small" onclick="prepareDelete(${row.no || row.id}, '${row.id || ''}')"><i class="fas fa-trash"></i> Hapus</button></td>
             </tr>
         `;
     }).join('');
@@ -335,31 +342,115 @@ function updateStats(data) {
 
 function filterTable() { renderTable(allData); }
 
-// ========== DELETE DATA ==========
-function deleteData(rowNo) {
-    deleteTarget = rowNo;
+// ========== PREPARE DELETE ==========
+function prepareDelete(no, id) {
+    deleteTarget = no;
+    deleteTargetId = id;
     document.getElementById('deleteModal').style.display = 'flex';
-    document.getElementById('confirmDeleteBtn').onclick = async () => {
-        showLoading(true);
-        try {
-            // Cari ID berdasarkan NO
-            const toDelete = allData.find(d => d.no === deleteTarget || d.id === deleteTarget);
-            if (toDelete && toDelete.no) {
-                await fetch(`${SHEETDB_API}/NO/${toDelete.no}`, { method: 'DELETE' });
+}
+
+// ========== DELETE DATA + REINDEX OTOMATIS ==========
+async function deleteAndReindex() {
+    showLoading(true);
+    
+    try {
+        // 1. Ambil semua data dari SheetDB
+        const response = await fetch(SHEETDB_API);
+        let currentData = await response.json();
+        
+        // 2. Hapus data yang dipilih (berdasarkan NO atau id)
+        let dataToKeep = [];
+        let deleted = false;
+        
+        for (const row of currentData) {
+            if (row.NO == deleteTarget || row.id == deleteTargetId) {
+                deleted = true;
+                continue;
             }
-            showAlert('Data berhasil dihapus', 'success');
-            loadData();
-        } catch(e) {
-            let localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
-            localData = localData.filter(d => d.id !== deleteTarget && d.no !== deleteTarget);
-            localStorage.setItem('rekap_data', JSON.stringify(localData));
-            showAlert('Data dihapus dari lokal', 'success');
-            loadData();
-        } finally {
-            closeModal();
-            showLoading(false);
+            dataToKeep.push(row);
         }
-    };
+        
+        if (!deleted && deleteTargetId) {
+            // Coba hapus berdasarkan id
+            await fetch(`${SHEETDB_API}/${deleteTargetId}`, { method: 'DELETE' });
+            // Ambil ulang data setelah delete
+            const afterDeleteResponse = await fetch(SHEETDB_API);
+            dataToKeep = await afterDeleteResponse.json();
+        } else if (deleteTarget) {
+            // Hapus berdasarkan NO
+            await fetch(`${SHEETDB_API}/NO/${deleteTarget}`, { method: 'DELETE' });
+            // Ambil ulang data setelah delete
+            const afterDeleteResponse = await fetch(SHEETDB_API);
+            dataToKeep = await afterDeleteResponse.json();
+        }
+        
+        // 3. Reindex ulang NO (1,2,3,...)
+        const reindexedData = dataToKeep.map((row, index) => ({
+            ...row,
+            NO: index + 1
+        }));
+        
+        // 4. Update semua data ke SheetDB (batch update)
+        for (const row of reindexedData) {
+            const rowId = row.id;
+            if (rowId) {
+                // Update berdasarkan id
+                await fetch(`${SHEETDB_API}/${rowId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: row })
+                });
+            }
+        }
+        
+        // 5. Hapus localStorage yang tersinkron
+        localStorage.removeItem('rekap_data');
+        
+        showAlert('Data berhasil dihapus & nomor urut telah diperbarui!', 'success');
+        await loadData();
+        
+    } catch(e) {
+        console.error('Delete error:', e);
+        // Fallback ke localStorage
+        let localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
+        const newLocalData = localData.filter(d => d.no !== deleteTarget && d.id !== deleteTargetId);
+        // Reindex local
+        const reindexedLocal = newLocalData.map((d, idx) => ({ ...d, no: idx + 1 }));
+        localStorage.setItem('rekap_data', JSON.stringify(reindexedLocal));
+        showAlert('Data dihapus dari lokal & nomor urut diperbarui', 'success');
+        loadData();
+    } finally {
+        closeModal();
+        showLoading(false);
+    }
+}
+
+// ========== REINDEX ALL DATA (SAAT PERLU) ==========
+async function reindexAllData() {
+    try {
+        const response = await fetch(SHEETDB_API);
+        let currentData = await response.json();
+        
+        if (!currentData || currentData.length === 0) return;
+        
+        const reindexedData = currentData.map((row, index) => ({
+            ...row,
+            NO: index + 1
+        }));
+        
+        for (const row of reindexedData) {
+            const rowId = row.id;
+            if (rowId) {
+                await fetch(`${SHEETDB_API}/${rowId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: row })
+                });
+            }
+        }
+    } catch(e) {
+        console.error('Reindex error:', e);
+    }
 }
 
 // ========== EXPORT EXCEL ==========
@@ -383,35 +474,8 @@ function exportToExcel() {
     showAlert('Data berhasil diekspor!', 'success');
 }
 
-// ========== SYNC DATA ==========
-async function syncData() {
-    const localData = JSON.parse(localStorage.getItem('rekap_data') || '[]');
-    if (localData.length === 0) {
-        showAlert('Tidak ada data lokal', 'warning');
-        return;
-    }
-    
-    showLoading(true);
-    let success = 0;
-    for (const data of localData) {
-        try {
-            await fetch(SHEETDB_API, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: data })
-            });
-            success++;
-        } catch(e) {}
-    }
-    if (success) {
-        localStorage.removeItem('rekap_data');
-        loadData();
-        showAlert(`${success} data tersinkron`, 'success');
-    } else {
-        showAlert('Gagal sinkron', 'error');
-    }
-    showLoading(false);
-}
+// Set confirm delete button
+document.getElementById('confirmDeleteBtn').onclick = deleteAndReindex;
 
 // Load data saat halaman dibuka
 loadData();
